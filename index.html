@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Machine à sous TikTok</title>
+  <title>Slot 3B Bo Bo Boom</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * {
@@ -12,250 +12,296 @@
     }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #151515, #000000 60%, #020617 100%);
-      color: #f9fafb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
       height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
+      background:
+        radial-gradient(circle at top, #1d4ed8 0, #020617 40%, #000 100%);
+      color: #e5e7eb;
+      overflow: hidden;
+    }
+
+    /* === ARRIÈRE-PLAN COINS / LUMIÈRES === */
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -40px;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(251, 191, 36, 0.18), transparent 55%),
+        radial-gradient(circle at 85% 15%, rgba(59, 130, 246, 0.25), transparent 55%),
+        radial-gradient(circle at 20% 80%, rgba(248, 113, 113, 0.22), transparent 55%),
+        radial-gradient(circle at 80% 80%, rgba(52, 211, 153, 0.22), transparent 55%);
+      opacity: 0.9;
+      z-index: -2;
+      filter: blur(1px);
     }
 
     .scene {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      width: 100%;
+      width: min(900px, 100%);
+      padding: 12px;
     }
 
-    /* ===== MACHINE ===== */
+    /* === MACHINE COMPLETE === */
 
     .machine {
       position: relative;
-      width: min(520px, 100%);
-      padding: 18px 20px 26px;
-      border-radius: 26px;
-      background: radial-gradient(circle at top, #1f2937, #020617 70%);
+      margin: 0 auto;
+      width: 100%;
+      max-width: 840px;
+      border-radius: 28px;
+      padding: 18px 26px 26px;
+      background: radial-gradient(circle at top, #111827 0, #020617 60%, #000 100%);
       box-shadow:
-        0 0 40px rgba(59, 130, 246, 0.4),
-        0 0 90px rgba(236, 72, 153, 0.5);
-      border: 2px solid rgba(148, 163, 184, 0.35);
+        0 0 40px rgba(37, 99, 235, 0.7),
+        0 0 90px rgba(236, 72, 153, 0.7);
+      border: 3px solid rgba(148, 163, 184, 0.6);
     }
 
     .machine::before {
       content: "";
       position: absolute;
-      inset: -4px;
+      inset: -6px;
       border-radius: inherit;
       background: linear-gradient(
-        135deg,
-        #22c55e,
-        #0ea5e9,
-        #6366f1,
+        90deg,
+        #f97316,
         #ec4899,
+        #6366f1,
+        #22c55e,
+        #eab308,
         #f97316
       );
-      opacity: 0.22;
       z-index: -1;
+      opacity: 0.6;
       filter: blur(10px);
     }
 
-    .machine-header {
+    /* TOP JACKPOT BAR */
+
+    .top-bar {
+      position: relative;
+      margin: 0 auto 12px;
+      width: 80%;
+      padding: 6px 12px 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f97316, #ec4899, #6366f1);
+      box-shadow: 0 0 24px rgba(236, 72, 153, 0.9);
       text-align: center;
-      margin-bottom: 12px;
+      color: #0b1120;
     }
-
-    .machine-logo {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      background: linear-gradient(90deg, #f97316, #ec4899);
-      -webkit-background-clip: text;
-      color: transparent;
-      text-shadow: 0 0 16px rgba(248, 113, 113, 0.7);
+    .top-bar-title {
+      font-weight: 900;
+      font-size: 20px;
+      letter-spacing: 0.08em;
     }
-
-    .machine-sub {
-      font-size: 13px;
+    .top-bar-sub {
+      font-size: 11px;
+      font-weight: 600;
       opacity: 0.9;
-      margin-top: 2px;
-      color: #e5e7eb;
     }
 
-    .viewer-tag {
-      margin-top: 8px;
-      font-size: 14px;
+    /* HEADER VIEWER / TEXTE */
+
+    .header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .brand {
+      font-size: 18px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
       color: #9ca3af;
     }
 
+    .viewer-tag {
+      margin-top: 4px;
+      font-size: 14px;
+      color: #e5e7eb;
+    }
     .viewer-tag span {
       color: #f97316;
       font-weight: 700;
+      text-shadow: 0 0 10px rgba(248, 113, 113, 0.9);
     }
 
-    /* Vitre / écran */
-    .window {
-      margin-top: 16px;
-      padding: 10px 12px;
-      border-radius: 18px;
-      background: radial-gradient(circle at top, #111827, #020617);
-      border: 1px solid #1f2937;
-      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.8);
+    .subtitle {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    /* ÉCRAN PRINCIPAL (VITRE) */
+
+    .screen {
+      margin-top: 14px;
+      padding: 16px 18px 18px;
+      border-radius: 22px;
+      background: radial-gradient(circle at top, #020617, #020617 55%, #000 100%);
+      border: 2px solid #1f2937;
+      box-shadow:
+        inset 0 0 40px rgba(15, 23, 42, 1),
+        0 0 55px rgba(37, 99, 235, 0.7);
     }
 
     .reels-frame {
-      position: relative;
-      border-radius: 14px;
-      padding: 10px;
-      background: linear-gradient(145deg, #111827, #020617);
-      border: 1px solid #4b5563;
+      border-radius: 18px;
+      padding: 10px 12px;
+      background: linear-gradient(145deg, #0f172a, #020617);
+      border: 2px solid #4b5563;
       box-shadow:
-        inset 0 0 12px rgba(15, 23, 42, 0.9),
-        0 0 24px rgba(15, 23, 42, 0.9);
+        inset 0 0 30px rgba(15, 23, 42, 1),
+        0 8px 18px rgba(0, 0, 0, 0.8);
     }
 
     .reels {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      gap: 12px;
     }
 
     .reel {
-      background: #0b1120;
-      border-radius: 10px;
-      border: 1px solid #1e293b;
-      height: 86px;
-      overflow: hidden;
       position: relative;
+      height: 120px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: radial-gradient(circle at top, #111827, #020617 75%);
+      border: 1px solid #374151;
       box-shadow:
-        inset 0 0 12px rgba(15, 23, 42, 0.9),
-        0 6px 10px rgba(0, 0, 0, 0.7);
+        inset 0 0 18px rgba(0, 0, 0, 0.9),
+        0 8px 18px rgba(0, 0, 0, 0.9);
     }
 
     .reel-strip {
       position: absolute;
-      width: 100%;
       top: 0;
       left: 0;
+      width: 100%;
     }
 
     .slot-cell {
+      height: 120px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 86px;
+      color: #e5e7eb;
+      text-shadow: 0 0 16px rgba(15, 23, 42, 1);
     }
 
-    .slot-emoji {
-      font-size: 32px;
-      margin-bottom: 2px;
+    .slot-symbol {
+      font-size: 44px;
+      margin-bottom: 4px;
     }
 
     .slot-label {
-      font-size: 11px;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
       color: #cbd5f5;
-      opacity: 0.9;
-      white-space: nowrap;
     }
 
     .reel.spinning {
       filter: brightness(1.1);
       box-shadow:
-        inset 0 0 16px rgba(55, 65, 81, 0.9),
-        0 0 26px rgba(59, 130, 246, 0.5);
+        inset 0 0 24px rgba(59, 130, 246, 1),
+        0 0 30px rgba(59, 130, 246, 0.9);
+      border-color: #60a5fa;
     }
 
-    /* Zone de message */
-
-    .info-panel {
-      margin-top: 12px;
+    .status-panel {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.95), #020617);
+      border: 1px solid #374151;
+      font-size: 13px;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       gap: 6px;
+    }
+    .status-label {
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      font-size: 11px;
+      color: #9ca3af;
+      text-transform: uppercase;
+    }
+    .status-text {
       font-size: 13px;
     }
-
-    .status-line {
-      min-height: 20px;
-    }
-
-    .status-line span {
-      font-weight: 600;
-    }
-
     .status-wait {
       color: #e5e7eb;
     }
-
     .status-win {
       color: #4ade80;
-      text-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
+      text-shadow: 0 0 12px rgba(74, 222, 128, 0.9);
     }
-
     .status-lose {
       color: #f97316;
+      text-shadow: 0 0 8px rgba(248, 113, 113, 0.8);
     }
 
     .rules {
+      margin-top: 6px;
+      text-align: center;
       font-size: 11px;
       color: #9ca3af;
       line-height: 1.35;
     }
 
-    /* Bouton de spin (pour toi, en debug) */
-
     .controls {
+      margin-top: 14px;
       display: flex;
       justify-content: center;
-      margin-top: 10px;
     }
 
     .btn-spin {
-      padding: 6px 16px;
+      padding: 7px 22px;
       border-radius: 999px;
       border: none;
-      font-size: 13px;
-      font-weight: 600;
       cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       background: linear-gradient(90deg, #22c55e, #16a34a);
-      color: #020617;
+      color: #022c22;
       box-shadow:
-        0 0 10px rgba(34, 197, 94, 0.7),
-        0 3px 8px rgba(15, 23, 42, 0.8);
+        0 0 18px rgba(34, 197, 94, 0.9),
+        0 6px 14px rgba(0, 0, 0, 0.9);
     }
-
     .btn-spin:active {
       transform: translateY(1px);
       box-shadow:
-        0 0 5px rgba(34, 197, 94, 0.7),
-        0 1px 4px rgba(15, 23, 42, 0.9);
+        0 0 10px rgba(34, 197, 94, 0.8),
+        0 2px 6px rgba(0, 0, 0, 1);
     }
 
-    /* Tu peux cacher le bouton pour TikTok en mettant display:none ici */
-    /* .controls { display: none; } */
+    /* Pour cacher le bouton en production TikTok :
+       .controls { display: none; } */
 
-    @media (max-width: 480px) {
+    @media (max-width: 640px) {
       .machine {
-        padding: 16px 14px 22px;
+        padding: 14px 12px 18px;
       }
-
-      .machine-logo {
-        font-size: 20px;
+      .top-bar {
+        width: 92%;
+        padding-inline: 10px;
       }
-
       .reel {
-        height: 78px;
+        height: 96px;
       }
-
       .slot-cell {
-        height: 78px;
+        height: 96px;
       }
-
-      .slot-emoji {
-        font-size: 28px;
+      .slot-symbol {
+        font-size: 34px;
       }
     }
   </style>
@@ -263,59 +309,70 @@
 <body>
   <div class="scene">
     <div class="machine">
-      <div class="machine-header">
-        <div class="machine-logo">3B BO BO BOOM</div>
-        <div class="machine-sub">Slot cadeaux TikTok • 4 symboles identiques = cadeau gagné</div>
+      <div class="top-bar">
+        <div class="top-bar-title">JACKPOT 3B • 777</div>
+        <div class="top-bar-sub">4 SYMBOLS IDENTIQUES = CADEAU OBLIGÉ</div>
+      </div>
+
+      <div class="header">
+        <div class="brand">3B BO BO BOOM</div>
         <div class="viewer-tag">
-          Viewer : <span id="viewerName">???</span>
+          Viewer : <span id="viewerName">Viewer</span>
+        </div>
+        <div class="subtitle">
+          La machine se lance à chaque cadeau TikTok.
         </div>
       </div>
 
-      <div class="window">
+      <div class="screen">
         <div class="reels-frame">
-          <div class="reels" id="reels"></div>
+          <div id="reels" class="reels"></div>
         </div>
-      </div>
 
-      <div class="info-panel">
-        <div id="status" class="status-line status-wait">
-          En attente de spin…
+        <div class="status-panel">
+          <div class="status-label">STATUS</div>
+          <div id="status" class="status-text status-wait">
+            En attente de spin…
+          </div>
         </div>
+
         <div class="rules">
-          Quand le viewer envoie un cadeau, la machine tourne.  
-          4 symboles identiques = tu dois lui envoyer ce cadeau sur TikTok.
+          Si le viewer aligne <strong>4 fois le même symbole</strong>, tu lui envoies
+          ce cadeau sur TikTok (rose, donut, galaxy, Léon, etc.).
         </div>
       </div>
 
       <div class="controls">
-        <button class="btn-spin" id="btnSpin">Tester un spin</button>
+        <button class="btn-spin" id="btnSpin">Lancer la machine</button>
       </div>
     </div>
   </div>
 
   <script>
-    // --- Config symboles / cadeaux ---
+    // --- CONFIG SYMBOLS (CADEAUX) ---
     const SYMBOLS = [
-      { id: "rose",   emoji: "🌹", name: "Rose" },
-      { id: "donut",  emoji: "🍩", name: "Donut" },
+      { id: "rose", emoji: "🌹", name: "Rose" },
+      { id: "donut", emoji: "🍩", name: "Donut" },
       { id: "tiktok", emoji: "🎵", name: "TikTok" },
-      { id: "lion",   emoji: "🦁", name: "Léon Chaton" },
+      { id: "lion", emoji: "🦁", name: "Léon chaton" },
       { id: "galaxy", emoji: "🌌", name: "Galaxy" },
-      { id: "moto",   emoji: "🏍️", name: "Moto" }
+      { id: "moto", emoji: "🏍️", name: "Moto" }
     ];
 
     const REEL_COUNT = 4;
-    const SPIN_TIME = 1200;      // durée de base
-    const STEP_TIME = 90;        // temps entre changements pendant spin
+    const SPIN_TIME = 1200;
+    const STEP_TIME = 90;
 
     const reelsContainer = document.getElementById("reels");
     const statusEl = document.getElementById("status");
     const btnSpin = document.getElementById("btnSpin");
 
+    // Récup pseudo depuis l’URL pour Tikfinity: ?user=XXXX
     const params = new URLSearchParams(window.location.search);
     const viewer =
       params.get("user") ||
       params.get("username") ||
+      params.get("viewer") ||
       "Viewer";
     document.getElementById("viewerName").textContent = viewer;
 
@@ -325,7 +382,6 @@
       return SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
     }
 
-    // Création des 4 rouleaux
     function initMachine() {
       reelsContainer.innerHTML = "";
       for (let i = 0; i < REEL_COUNT; i++) {
@@ -338,10 +394,9 @@
         const cell = document.createElement("div");
         cell.className = "slot-cell";
         cell.innerHTML = `
-          <div class="slot-emoji">❔</div>
+          <div class="slot-symbol">❔</div>
           <div class="slot-label">En attente</div>
         `;
-
         strip.appendChild(cell);
         reel.appendChild(strip);
         reelsContainer.appendChild(reel);
@@ -351,10 +406,9 @@
     function setReelSymbol(index, symbol) {
       const reel = reelsContainer.children[index];
       const strip = reel.querySelector(".reel-strip");
-
       strip.innerHTML = `
         <div class="slot-cell">
-          <div class="slot-emoji">${symbol.emoji}</div>
+          <div class="slot-symbol">${symbol.emoji}</div>
           <div class="slot-label">${symbol.name}</div>
         </div>
       `;
@@ -364,18 +418,17 @@
       if (spinning) return;
       spinning = true;
 
-      statusEl.className = "status-line status-wait";
+      statusEl.className = "status-text status-wait";
       statusEl.textContent = "La machine tourne…";
 
       const finalSymbols = [];
       const intervals = [];
 
-      // mettre tous les rouleaux en mode "spinning"
+      // lance les 4 rouleaux
       for (let i = 0; i < REEL_COUNT; i++) {
         const reel = reelsContainer.children[i];
         reel.classList.add("spinning");
 
-        // changement rapide des symboles pendant le spin
         const interval = setInterval(() => {
           const sym = randomSymbol();
           setReelSymbol(i, sym);
@@ -403,31 +456,30 @@
     }
 
     function endSpin(finalSymbols) {
-      const allSame = finalSymbols.every(s => s.id === finalSymbols[0].id);
+      const allSame = finalSymbols.every((s) => s.id === finalSymbols[0].id);
 
       if (allSame) {
-        statusEl.className = "status-line status-win";
+        statusEl.className = "status-text status-win";
         statusEl.textContent =
-          `🎁 ${viewer} a aligné 4x ${finalSymbols[0].name} ! ` +
+          `🎁 JACKPOT ! ${viewer} a aligné 4x ${finalSymbols[0].name}. ` +
           `Tu lui dois ce cadeau sur TikTok.`;
       } else {
-        statusEl.className = "status-line status-lose";
+        statusEl.className = "status-text status-lose";
         statusEl.textContent =
-          "Pas 4 symboles identiques… Il faudra un autre cadeau pour gagner.";
+          "Pas 4 symboles identiques… Nouveau cadeau pour relancer !";
       }
 
       spinning = false;
     }
 
-    // init + spin automatique au chargement
+    // init + spin automatique
     initMachine();
-    setTimeout(spin, 400); // petit délai pour l'effet
+    setTimeout(spin, 500);
 
-    // bouton debug pour toi
+    // bouton test
     btnSpin.addEventListener("click", spin);
 
-    // Si un jour tu veux déclencher depuis l'extérieur (overlay),
-    // tu pourras appeler window.triggerSlotSpin() depuis ton outil.
+    // pour déclencher depuis l’extérieur (si besoin plus tard)
     window.triggerSlotSpin = spin;
   </script>
 </body>
