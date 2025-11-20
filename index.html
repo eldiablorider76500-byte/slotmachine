@@ -300,6 +300,56 @@
         justify-content: center;
       }
     }
+
+    /* ================== EFFETS GROS GAINS ================== */
+    .fx {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 30;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Feu d’artifice GIGA WIN */
+    .fx-fireworks {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,0,0.5), transparent 60%),
+        radial-gradient(circle at 80% 40%, rgba(255,0,0,0.5), transparent 60%),
+        radial-gradient(circle at 40% 80%, rgba(0,200,255,0.5), transparent 60%),
+        rgba(0,0,0,0.7);
+      animation: fireworks 1.2s ease-out infinite;
+    }
+
+    @keyframes fireworks {
+      0% { opacity: 0; transform: scale(1); }
+      30% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(1.05); }
+    }
+
+    /* Confettis MEGA WIN */
+    .fx-confetti {
+      background-image:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,0,0,0.5) 0 10px,
+          transparent 10px 20px
+        ),
+        repeating-linear-gradient(
+          to right,
+          rgba(0,255,0,0.5) 0 10px,
+          transparent 10px 20px
+        );
+      animation: confetti 1.2s linear infinite;
+    }
+
+    @keyframes confetti {
+      0% { background-position: 0 0, 0 0; opacity: 0; }
+      20% { opacity: 1; }
+      100% { background-position: 0 200px, 200px 0; opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -349,7 +399,8 @@
         <div class="helper-text">
           Minimum <strong>49 pièces</strong> pour jouer.<br>
           49–98 → 1 tour • 99–298 → 3 tours • 299–2998 → 7 tours • 2999+ → 70 tours. <br>
-          Les gros cadeaux (loup, moto) ne peuvent tomber qu'après <strong>200 tours</strong> minimum.
+          Les gros cadeaux (loup, moto) ne peuvent tomber qu'après <strong>200 tours</strong> minimum. <br>
+          Tous les ~20–25 tours, un petit gain est garanti.
         </div>
       </div>
 
@@ -361,10 +412,13 @@
   </div>
 </div>
 
+<!-- Effets plein écran -->
+<div id="fx-fireworks" class="fx fx-fireworks hidden"></div>
+<div id="fx-confetti" class="fx fx-confetti hidden"></div>
+
 <script>
   // ----- CONFIG DES SYMBOLS (cadeaux) -----
-  const IMAGE_BASE_PATH = "";
-
+  const IMAGE_BASE_PATH = ""; // images à la racine du projet
 
   const SYMBOLS = [
     { id: "cygne",        file: "IMG-20251120-WA0017.jpg", label: "Cygne royal",       isBig: false },
@@ -385,7 +439,7 @@
     { id: "tofu",         file: "IMG-20251120-WA0032.jpg", label: "Tofu",              isBig: false },
     { id: "coeurdoigts",  file: "IMG-20251120-WA0033.jpg", label: "Cœur avec les doigts", isBig: false },
     { id: "coeurnuage",   file: "IMG-20251120-WA0034.jpg", label: "Cœur nuage",        isBig: false },
-    { id: "moto",         file: "IMG-20251120-WA0035.jpg", label: "Moto",             isBig: true,  bigType: "mega" },
+    { id: "moto",         file: "IMG-20251120-WA0035.jpg", label: "Moto",              isBig: true,  bigType: "mega" },
     { id: "pistolet",     file: "IMG-20251120-WA0042.jpg", label: "Pistolet à argent", isBig: false }
   ];
 
@@ -399,6 +453,10 @@
   let isSpinning = false;
   let totalSpins = 0;
   let spinsSinceBigPrize = 0;
+
+  // Petits gains forcés tous les ~20–25 tours
+  let spinsSinceSmallPrize = 0;
+  let smallPrizeTarget = 20 + Math.floor(Math.random() * 6); // 20 à 25
 
   const reels = Array.from(document.querySelectorAll(".reel"));
   const winBanner = document.getElementById("winBanner");
@@ -414,15 +472,17 @@
   const setGiftBtn = document.getElementById("setGiftBtn");
   const spinBtn = document.getElementById("spinBtn");
 
+  const fxFireworks = document.getElementById("fx-fireworks");
+  const fxConfetti = document.getElementById("fx-confetti");
+
   // ----- UTILS -----
-  function randomSymbol() {
-    const index = Math.floor(Math.random() * SYMBOLS.length);
-    return SYMBOLS[index];
+  function randomSymbol(pool = SYMBOLS) {
+    const index = Math.floor(Math.random() * pool.length);
+    return pool[index];
   }
 
   function randomNonBigSymbol() {
-    const index = Math.floor(Math.random() * NON_BIG_SYMBOLS.length);
-    return NON_BIG_SYMBOLS[index];
+    return randomSymbol(NON_BIG_SYMBOLS);
   }
 
   function calcSpinsFromCoins(coins) {
@@ -446,13 +506,13 @@
     let label = "";
     if (type === "giga") {
       cls = "giga";
-      label = "GIGA WIN !!!";
+      label = "GIGA WIN";
     } else if (type === "mega") {
       cls = "mega";
-      label = "MEGA WIN !!";
+      label = "MEGA WIN";
     } else if (type === "big") {
       cls = "big";
-      label = "BIG WIN !";
+      label = "BIG WIN";
     } else {
       winBanner.style.display = "none";
       return;
@@ -460,13 +520,31 @@
 
     winBanner.classList.remove("big", "mega", "giga");
     winBanner.classList.add(cls);
-    winTypeLabel.textContent = label;
-    winSymbolLabel.textContent = symbol.label;
+    winTypeLabel.textContent = `${label} pour ${currentPlayerName || "-"}`;
+    winSymbolLabel.textContent = `4× ${symbol.label}`;
     winBanner.style.display = "flex";
+
+    // Reset FX
+    fxFireworks.classList.add("hidden");
+    fxConfetti.classList.add("hidden");
+
+    // Loup -> feu d'artifice, Moto -> confettis
+    if (type === "giga") {
+      fxFireworks.classList.remove("hidden");
+    } else if (type === "mega") {
+      fxConfetti.classList.remove("hidden");
+    }
+
+    // On masque tout au bout de 4 secondes
+    setTimeout(() => {
+      hideWinBanner();
+    }, 4000);
   }
 
   function hideWinBanner() {
     winBanner.style.display = "none";
+    fxFireworks.classList.add("hidden");
+    fxConfetti.classList.add("hidden");
   }
 
   // ----- INITIALISATION DES REELS -----
@@ -482,6 +560,37 @@
 
   initReels();
   updateStatusDisplays();
+
+  // ----- CALCUL DU RÉSULTAT D’UN SPIN (avec règles 20–25 / 200 tours) -----
+  function computeFinalSymbols() {
+    totalSpins++;
+    spinsSinceBigPrize++;
+    spinsSinceSmallPrize++;
+
+    let forceSmallPrize = false;
+
+    // Si trop de tours sans petit gain, on force un petit gain (4x le même symbole non-big)
+    if (spinsSinceSmallPrize >= smallPrizeTarget) {
+      forceSmallPrize = true;
+    }
+
+    const finalSymbols = [];
+
+    if (forceSmallPrize) {
+      const chosen = randomNonBigSymbol();
+      for (let i = 0; i < 4; i++) {
+        finalSymbols.push(chosen);
+      }
+    } else {
+      // Pool autorisé : avant 200 tours depuis gros gain -> pas de big
+      const pool = (spinsSinceBigPrize >= 200) ? SYMBOLS : NON_BIG_SYMBOLS;
+      for (let i = 0; i < 4; i++) {
+        finalSymbols.push(randomSymbol(pool));
+      }
+    }
+
+    return finalSymbols; // tableau d’objets {id,file,label,isBig,...}
+  }
 
   // ----- LOGIQUE DU CADEAU -----
   setGiftBtn.addEventListener("click", () => {
@@ -509,7 +618,7 @@
 
     currentPlayerName = name;
     currentGiftCoins = coins;
-    spinsLeft += spins; // on ajoute au stock de tours (au cas où la personne envoie plusieurs cadeaux).
+    spinsLeft += spins; // stock de tours
     updateStatusDisplays();
 
     spinBtn.disabled = false;
@@ -526,22 +635,21 @@
 
     // Consommer un tour
     spinsLeft -= 1;
-    totalSpins += 1;
-    spinsSinceBigPrize += 1;
-    updateStatusDisplays();
 
-    startSpin();
+    const finalSymbols = computeFinalSymbols(); // calcule 4 symboles en respectant les règles
+    updateStatusDisplays();
+    startSpin(finalSymbols);
   });
 
-  function startSpin() {
+  function startSpin(finalSymbols) {
     isSpinning = true;
     hideWinBanner();
 
-    // Durées légèrement décalées pour chaque rouleau (fin vers ~3 secondes)
-    const reelDurations = [1600, 2000, 2400, 2800]; // en ms
+    // Durées un peu décalées (fin ~ 2.8s)
+    const reelDurations = [1600, 2000, 2400, 2800]; // ms
 
-    const finalSymbols = new Array(4);
     let reelsStopped = 0;
+    const finalIds = new Array(4);
 
     reels.forEach((reel, index) => {
       reel.classList.add("spinning");
@@ -557,9 +665,8 @@
       setTimeout(() => {
         clearInterval(shuffleInterval);
 
-        // symbole final tiré au hasard
-        let finalSym = randomSymbol();
-        finalSymbols[index] = finalSym;
+        const finalSym = finalSymbols[index];
+        finalIds[index] = finalSym.id;
 
         img.src = IMAGE_BASE_PATH + finalSym.file;
         img.alt = finalSym.label;
@@ -569,12 +676,10 @@
         reelsStopped += 1;
 
         if (reelsStopped === reels.length) {
-          // Tous les rouleaux sont arrêtés -> appliquer la règle des gros gains
-          applyBigPrizeRulesAndComputeWin(finalSymbols);
+          applyPrizeRules(finalSymbols, finalIds);
           isSpinning = false;
           updateStatusDisplays();
 
-          // Si plus de tours, désactiver le bouton
           if (spinsLeft <= 0) {
             spinBtn.disabled = true;
           }
@@ -583,9 +688,10 @@
     });
   }
 
-  function applyBigPrizeRulesAndComputeWin(finalSymbols) {
+  // ----- APPLICATION DES RÈGLES DE GAIN -----
+  function applyPrizeRules(finalSymbols, finalIds) {
     // Vérifier si 4 mêmes symboles
-    const allSame = finalSymbols.every(s => s.id === finalSymbols[0].id);
+    const allSame = finalIds.every(id => id === finalIds[0]);
     if (!allSame) {
       hideWinBanner();
       return;
@@ -593,34 +699,23 @@
 
     let winningSymbol = finalSymbols[0];
 
-    // Gestion du minimum 200 tours entre deux gros gains (loups / moto)
     if (winningSymbol.isBig) {
-      if (spinsSinceBigPrize < 200) {
-        // Pas encore 200 tours depuis un gros gain → on downgrade en symbole normal
-        const replacement = randomNonBigSymbol();
-        winningSymbol = replacement;
-        for (let i = 0; i < reels.length; i++) {
-          const img = reels[i].querySelector("img");
-          img.src = IMAGE_BASE_PATH + replacement.file;
-          img.alt = replacement.label;
-          reels[i].dataset.symbolId = replacement.id;
-          finalSymbols[i] = replacement;
-        }
-        // Dans ce cas, ce sera un Big Win simple
-        showWinBanner("big", winningSymbol);
-        return;
-      } else {
-        // Gros gain autorisé
-        spinsSinceBigPrize = 0;
-      }
-    }
+      // GIGA / MEGA WIN
+      spinsSinceBigPrize = 0;
+      spinsSinceSmallPrize = 0;
+      smallPrizeTarget = 20 + Math.floor(Math.random() * 6);
 
-    // Déterminer le type de gain
-    if (winningSymbol.id === "loup") {
-      showWinBanner("giga", winningSymbol);
-    } else if (winningSymbol.id === "moto") {
-      showWinBanner("mega", winningSymbol);
+      if (winningSymbol.id === "loup") {
+        showWinBanner("giga", winningSymbol);
+      } else if (winningSymbol.id === "moto") {
+        showWinBanner("mega", winningSymbol);
+      } else {
+        showWinBanner("big", winningSymbol);
+      }
     } else {
+      // Petit gain
+      spinsSinceSmallPrize = 0;
+      smallPrizeTarget = 20 + Math.floor(Math.random() * 6);
       showWinBanner("big", winningSymbol);
     }
   }
