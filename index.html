@@ -425,30 +425,30 @@
     <!-- Bandeau -->
     <div class="top-banner">
       <div class="top-banner-title">3B BO BO BOOM • SLOT</div>
-      <div class="top-banner-sub">4 CADEAUX IDENTIQUES SUR LA LIGNE = JACKPOT</div>
+      <div class="top-banner-sub">4 CADEAUX IDENTIQUES SUR LA LIGNE = GAIN</div>
     </div>
 
     <!-- Panneau gauche -->
     <aside class="side-panel">
       <h3>CADEAUX TIKTOK</h3>
       <div class="payline-row">
-        <div class="pay-symbol">4 × Galaxy</div>
-        <div class="pay-multiplier">GIGA WIN</div>
+        <div class="pay-symbol">4 × Loup</div>
+        <div class="pay-multiplier">GIGAWIN</div>
       </div>
       <div class="payline-row">
-        <div class="pay-symbol">4 × Loup / Moto</div>
-        <div class="pay-multiplier">MEGA WIN</div>
+        <div class="pay-symbol">4 × Moto</div>
+        <div class="pay-multiplier">MEGAWIN</div>
       </div>
       <div class="payline-row">
-        <div class="pay-symbol">4 × Léon / Cygne</div>
+        <div class="pay-symbol">4 × Galaxy / Feux d’artifice</div>
         <div class="pay-multiplier">BIG WIN</div>
       </div>
       <div class="payline-row">
-        <div class="pay-symbol">4 × Donut / Rosa</div>
-        <div class="pay-multiplier">NICE GIFT</div>
+        <div class="pay-symbol">4 × Rosa / Donut / Cygne</div>
+        <div class="pay-multiplier">NICE WIN</div>
       </div>
       <div class="payline-row">
-        <div class="pay-symbol">4 × GG / Coeur</div>
+        <div class="pay-symbol">4 × autres cadeaux</div>
         <div class="pay-multiplier">CLEAN</div>
       </div>
     </aside>
@@ -459,7 +459,7 @@
         <div class="slot-header-left">
           <div>
             <span class="slot-label">Mise</span>
-            <span class="slot-value">1 cadeau TikTok</span>
+            <span class="slot-value">1 cadeau TikTok (min pièces)</span>
           </div>
           <div>
             <span class="slot-label">Condition</span>
@@ -513,10 +513,10 @@
       </div>
 
       <div>
-        <div class="stream-label">Rappel règles</div>
+        <div class="stream-label">Rappel</div>
         <div class="stream-value">
           Le viewer qui déclenche le spin et aligne 4 mêmes cadeaux sur la ligne
-          centrale gagne ce cadeau en retour.
+          centrale gagne ce cadeau en retour. GIGAWIN = 4× Loup, MEGAWIN = 4× Moto.
         </div>
       </div>
     </aside>
@@ -529,8 +529,12 @@
           <div class="credits-value gold">TEST OFFLINE</div>
         </div>
         <div>
-          <div class="credits-label">Rappel</div>
-          <div class="credits-value">4 symboles identiques = tu envoies ce cadeau</div>
+          <div class="credits-label">Pièces dispo</div>
+          <div class="credits-value gold" id="coinsDisplay">5</div>
+        </div>
+        <div>
+          <div class="credits-label">Minimum pour jouer</div>
+          <div class="credits-value" id="minCoinsDisplay">1 pièce</div>
         </div>
       </div>
 
@@ -540,7 +544,7 @@
       </button>
 
       <div class="note-bottom">
-        À connecter ensuite à Ticfinity pour lancer un spin à chaque cadeau.
+        À connecter ensuite à Ticfinity (1 cadeau = +X pièces ; spin si minimum ok).
       </div>
     </footer>
   </div>
@@ -575,6 +579,16 @@
     const statusEl = document.getElementById("status");
     const spinButton = document.getElementById("spinButton");
     const reelsFrame = document.getElementById("reelsFrame");
+    const coinsDisplay = document.getElementById("coinsDisplay");
+    const minCoinsDisplay = document.getElementById("minCoinsDisplay");
+
+    // ===== CONFIG PIÈCES =====
+    // ➜ Tu peux changer ici
+    const MIN_COINS = 1;   // minimum de pièces pour pouvoir jouer
+    let coins = 5;         // nombre de pièces de départ pour le mode test
+
+    coinsDisplay.textContent = coins;
+    minCoinsDisplay.textContent = MIN_COINS + " pièce" + (MIN_COINS > 1 ? "s" : "");
 
     let isSpinning = false;
 
@@ -598,6 +612,18 @@
     function spin() {
       if (isSpinning) return;
 
+      // Vérifier les pièces
+      if (coins < MIN_COINS) {
+        statusEl.textContent = "Pas assez de pièces pour jouer (min " + MIN_COINS + ").";
+        statusEl.classList.remove("win");
+        statusEl.classList.add("lose");
+        return;
+      }
+
+      // On consomme le minimum de pièces
+      coins -= MIN_COINS;
+      coinsDisplay.textContent = coins;
+
       isSpinning = true;
       spinButton.classList.add("disabled");
       reelsFrame.classList.remove("win");
@@ -611,7 +637,7 @@
         const symbolEl = reel.querySelector("[data-symbol]");
         let elapsed = 0;
 
-        // 1er rouleau = 3000 ms, puis 3300, 3600, 3900
+        // Durée de spin : 1er = 3000ms, puis +300ms à chaque rouleau
         const spinDuration = 3000 + index * 300;
 
         const interval = setInterval(() => {
@@ -634,12 +660,22 @@
     }
 
     function onSpinEnd(results) {
-      // Ici : 1 symbole par rouleau = ligne visible
-      // Jackpot UNIQUEMENT si les 4 sont identiques sur cette ligne
+      // 4 cadeaux sur la même ligne (la seule qu’on voit)
       const allSame = results.every((id) => id === results[0]);
 
       if (allSame) {
-        statusEl.textContent = "JACKPOT ! 4× " + results[0].toUpperCase() + " sur la ligne 🔥";
+        let tier;
+        const id = results[0];
+
+        if (id === "loup") {
+          tier = "GIGAWIN";
+        } else if (id === "moto") {
+          tier = "MEGAWIN";
+        } else {
+          tier = "BIG WIN";
+        }
+
+        statusEl.textContent = tier + " ! 4× " + id.toUpperCase() + " sur la ligne 🔥";
         statusEl.classList.add("win");
         reelsFrame.classList.add("win");
       } else {
@@ -660,7 +696,7 @@
       renderSymbol(symbolEl, s);
     });
 
-    // Tu pourras appeler window.tiktokSpin() plus tard depuis Ticfinity
+    // Pour Ticfinity plus tard : tu pourras appeler window.tiktokSpin()
     window.tiktokSpin = spin;
   </script>
 </body>
