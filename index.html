@@ -20,7 +20,7 @@
       color: #fff;
     }
 
-    /* CONTENEUR GLOBAL (la machine entière) */
+    /* CONTENEUR = ta machine (image de fond) */
     .slot-wrapper {
       position: relative;
       width: min(1280px, 100vw);
@@ -31,19 +31,19 @@
       background-repeat: no-repeat;
     }
 
-    /* ZONE où on dessine les rouleaux (positionnée sur la vitre de la machine) */
+    /* ZONE DES ROULEAUX (à placer sur la vitre de ta machine) */
     .reels-zone {
       position: absolute;
-      /* À adapter selon ton image : */
-      left: 23%;   /* position horizontale de la vitre */
-      top: 27%;    /* position verticale de la vitre   */
-      width: 54%;  /* largeur totale des 4 rouleaux   */
-      height: 38%; /* hauteur des rouleaux            */
+      /* Ces valeurs sont à ajuster pour que ça tombe pile dans ta fenêtre */
+      left: 23%;
+      top: 26%;
+      width: 54%;
+      height: 40%;
 
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 1.5%;
-      pointer-events: none; /* pour que la souris ne gêne pas */
+      gap: 1.8%;
+      pointer-events: none;
     }
 
     .reel {
@@ -51,52 +51,49 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      border-radius: 8px;
+      border-radius: 10px;
+      /* léger glow blanc comme les machines */
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.8), 0 0 16px rgba(255,255,255,0.35);
     }
 
+    /* fond neutre (si jamais les images de symboles ne se chargent pas) */
     .reel-bg {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at top, #1f2933, #020617 70%);
-      opacity: 0.55; /* laisse voir un peu la vitre derrière */
+      background: radial-gradient(circle at top, #222c, #020617 70%);
     }
 
     .reel-strip {
       position: absolute;
       left: 0;
+      top: 0;
       width: 100%;
+      will-change: transform;
     }
 
     .symbol-cell {
       height: 100px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      color: #f9fafb;
-      text-shadow: 0 0 12px #000;
+      padding: 6px;
     }
 
-    .symbol-emoji {
-      font-size: 2.6vw;
-      max-font-size: 60px;
-      margin-bottom: 4px;
+    .symbol-img {
+      max-width: 80%;
+      max-height: 80px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 6px rgba(0,0,0,0.9));
     }
 
-    .symbol-label {
-      font-size: 0.9vw;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+    /* Quand ça tourne : petit effet intense */
+    .reel.spinning {
+      box-shadow:
+        inset 0 0 8px rgba(0,0,0,0.9),
+        0 0 20px rgba(255,255,255,0.7);
     }
 
-    /* Effet quand ça tourne */
-    .reel.spinning .reel-bg {
-      opacity: 0.8;
-      box-shadow: 0 0 18px rgba(248, 250, 252, 0.7);
-    }
-
-    /* MINIBAR EN BAS pour le texte (sans détruire ton design) */
+    /* Barre de texte en bas (gagné / perdu / attente) */
     .status-bar {
       position: absolute;
       left: 50%;
@@ -104,22 +101,24 @@
       transform: translateX(-50%);
       padding: 6px 14px;
       border-radius: 999px;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0,0,0,0.7);
       font-size: 14px;
       text-align: center;
       min-width: 40%;
     }
 
     .status-win { color: #4ade80; }
-    .status-lose { color: #f97316; }
+    .status-lose { color: #fb923c; }
     .status-wait { color: #e5e7eb; }
 
-    /* Bouton test (tu peux le masquer après) */
+    /* Bouton de test (pour toi, tu pourras le virer ensuite) */
     .test-controls {
       position: absolute;
       right: 3%;
       bottom: 8%;
+      pointer-events: auto;
     }
+
     .btn-spin {
       padding: 8px 18px;
       border-radius: 999px;
@@ -127,40 +126,187 @@
       cursor: pointer;
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       background: linear-gradient(90deg, #22c55e, #16a34a);
       color: #022c22;
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+      box-shadow: 0 0 12px rgba(34,197,94,0.85);
     }
+
     .btn-spin:active { transform: translateY(1px); }
 
     @media (max-width: 768px) {
-      .symbol-emoji { font-size: 7vw; }
-      .symbol-label { font-size: 2vw; }
+      .symbol-cell { height: 70px; }
+      .symbol-img { max-height: 60px; }
       .status-bar { font-size: 11px; padding: 4px 10px; }
     }
   </style>
 </head>
+
 <body>
   <div class="slot-wrapper">
-    <!-- zone des rouleaux -->
+    <!-- LES 4 ROULEAUX seront injectés ici -->
     <div id="reelsZone" class="reels-zone"></div>
 
-    <!-- petit texte d’info -->
+    <!-- texte d’état -->
     <div id="status" class="status-bar status-wait">
       En attente de cadeau TikTok…
     </div>
 
-    <!-- bouton test (pour toi, pas pour le live) -->
+    <!-- bouton test -->
     <div class="test-controls">
       <button id="btnSpin" class="btn-spin">SPIN TEST</button>
     </div>
   </div>
 
   <script>
-    // --- SYMBOLES = CADEAUX ---
+    /*************************************************
+     * CONFIG : symboles (tu pourras remplacer par tes PNG TikTok)
+     **************************************************/
     const SYMBOLS = [
-      { id: "rose", emoji: "🌹", name: "Rose" },
-      { id: "donut", emoji: "🍩", name: "Donut" },
-     
+      { id: "rose",    file: "symbols/rose.png"    },
+      { id: "donut",   file: "symbols/donut.png"   },
+      { id: "galaxy",  file: "symbols/galaxy.png"  },
+      { id: "lion",    file: "symbols/lion.png"    },
+    ];
+
+    const NB_REELS = 4;
+    const VISIBLE_ROWS = 3;
+    const STRIP_LENGTH = 18; // nb de cases dans le strip
+
+    const reelsZone = document.getElementById("reelsZone");
+    const statusBar = document.getElementById("status");
+    const spinBtn = document.getElementById("btnSpin");
+
+    let isSpinning = false;
+
+    /*************************************************
+     * Création des rouleaux au chargement
+     **************************************************/
+    function createReels() {
+      for (let r = 0; r < NB_REELS; r++) {
+        const reel = document.createElement("div");
+        reel.className = "reel";
+
+        const reelBg = document.createElement("div");
+        reelBg.className = "reel-bg";
+
+        const strip = document.createElement("div");
+        strip.className = "reel-strip";
+
+        // on remplit avec des symboles (au hasard, neutre)
+        for (let i = 0; i < STRIP_LENGTH; i++) {
+          const cell = document.createElement("div");
+          cell.className = "symbol-cell";
+
+          const img = document.createElement("img");
+          img.className = "symbol-img";
+
+          const sym = SYMBOLS[i % SYMBOLS.length];
+          img.src = sym.file;
+          img.alt = sym.id;
+
+          cell.appendChild(img);
+          strip.appendChild(cell);
+        }
+
+        reel.appendChild(reelBg);
+        reel.appendChild(strip);
+        reelsZone.appendChild(reel);
+      }
+    }
+
+    /*************************************************
+     * Animation d’un spin
+     **************************************************/
+    function spinOnce(resultSymbolId = null, viewerName = "Test") {
+      if (isSpinning) return;
+      isSpinning = true;
+
+      statusBar.textContent = `Spin en cours pour ${viewerName}…`;
+      statusBar.className = "status-bar status-wait";
+
+      const reels = Array.from(document.querySelectorAll(".reel"));
+
+      reels.forEach((reel, index) => {
+        const strip = reel.querySelector(".reel-strip");
+        const cells = strip.children;
+
+        // hauteur d’un symbole
+        const symbolHeight = cells[0].getBoundingClientRect().height;
+
+        // on mélange les symboles pour l’animation
+        for (let i = 0; i < STRIP_LENGTH; i++) {
+          const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+          const img = cells[i].querySelector("img");
+          img.src = sym.file;
+          img.alt = sym.id;
+        }
+
+        // forcer le layout
+        strip.style.transition = "none";
+        strip.style.transform = "translateY(0px)";
+        // petit trick pour que le browser prenne le changement
+        void strip.offsetHeight;
+
+        // durée différente pour chaque rouleau
+        const duration = 900 + index * 250;
+        const easing = "cubic-bezier(0.15,0.85,0.25,1)";
+
+        // position finale
+        const finalIndex = STRIP_LENGTH - VISIBLE_ROWS;
+        const translateY = -finalIndex * symbolHeight;
+
+        reel.classList.add("spinning");
+        strip.style.transition = `transform ${duration}ms ${easing}`;
+        strip.style.transform = `translateY(${translateY}px)`;
+
+        // à la fin du mouvement, on nettoie
+        setTimeout(() => {
+          reel.classList.remove("spinning");
+
+          if (index === reels.length - 1) {
+            // arrêt du dernier rouleau => on décide win/lose
+            finishSpin(resultSymbolId, viewerName);
+          }
+        }, duration + 50);
+      });
+    }
+
+    function finishSpin(resultSymbolId, viewerName) {
+      isSpinning = false;
+
+      if (resultSymbolId) {
+        statusBar.textContent =
+          `${viewerName} a gagné : 4 x ${resultSymbolId.toUpperCase()} !`;
+        statusBar.className = "status-bar status-win";
+      } else {
+        statusBar.textContent = `${viewerName} n'a pas gagné cette fois.`;
+        statusBar.className = "status-bar status-lose";
+      }
+    }
+
+    /*************************************************
+     * Intégration TikTok plus tard :
+     * tu appelleras juste spinForViewer(pseudo, "rose")
+     **************************************************/
+    function spinForViewer(viewerName, symbolId) {
+      spinOnce(symbolId, viewerName);
+    }
+
+    // Bouton de test
+    spinBtn.addEventListener("click", () => {
+      // pour le test, on fait gagner 1 fois sur 3
+      const win = Math.random() < 0.33;
+      const symbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+      spinOnce(win ? symbol.id : null, "TestViewer");
+    });
+
+    // init
+    window.addEventListener("load", () => {
+      createReels();
+    });
+  </script>
+</body>
+</html>
+  
