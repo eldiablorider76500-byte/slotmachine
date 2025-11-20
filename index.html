@@ -3,186 +3,432 @@
 <head>
   <meta charset="UTF-8" />
   <title>Machine à sous TikTok</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #262626, #000);
-      color: #fff;
+      background: radial-gradient(circle at top, #151515, #000000 60%, #020617 100%);
+      color: #f9fafb;
       height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .wrapper {
+
+    .scene {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      width: 100%;
+    }
+
+    /* ===== MACHINE ===== */
+
+    .machine {
+      position: relative;
+      width: min(520px, 100%);
+      padding: 18px 20px 26px;
+      border-radius: 26px;
+      background: radial-gradient(circle at top, #1f2937, #020617 70%);
+      box-shadow:
+        0 0 40px rgba(59, 130, 246, 0.4),
+        0 0 90px rgba(236, 72, 153, 0.5);
+      border: 2px solid rgba(148, 163, 184, 0.35);
+    }
+
+    .machine::before {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: inherit;
+      background: linear-gradient(
+        135deg,
+        #22c55e,
+        #0ea5e9,
+        #6366f1,
+        #ec4899,
+        #f97316
+      );
+      opacity: 0.22;
+      z-index: -1;
+      filter: blur(10px);
+    }
+
+    .machine-header {
       text-align: center;
-      padding: 20px;
+      margin-bottom: 12px;
     }
-    .title {
-      font-size: 26px;
+
+    .machine-logo {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #f97316, #ec4899);
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 16px rgba(248, 113, 113, 0.7);
+    }
+
+    .machine-sub {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-top: 2px;
+      color: #e5e7eb;
+    }
+
+    .viewer-tag {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    .viewer-tag span {
+      color: #f97316;
       font-weight: 700;
-      margin-bottom: 10px;
     }
-    .subtitle {
-      font-size: 16px;
-      opacity: 0.8;
-      margin-bottom: 20px;
-    }
-    .viewer {
-      font-size: 18px;
-      margin-bottom: 15px;
-    }
-    .viewer span {
-      color: #ff4ddb;
-      font-weight: 700;
-    }
-    .slot-box {
-      background: rgba(0,0,0,0.8);
+
+    /* Vitre / écran */
+    .window {
+      margin-top: 16px;
+      padding: 10px 12px;
       border-radius: 18px;
-      border: 2px solid #ff4ddb;
-      padding: 20px 25px 25px;
-      box-shadow: 0 0 25px rgba(255, 77, 219, 0.5);
-      display: inline-block;
-      min-width: 280px;
+      background: radial-gradient(circle at top, #111827, #020617);
+      border: 1px solid #1f2937;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.8);
     }
+
+    .reels-frame {
+      position: relative;
+      border-radius: 14px;
+      padding: 10px;
+      background: linear-gradient(145deg, #111827, #020617);
+      border: 1px solid #4b5563;
+      box-shadow:
+        inset 0 0 12px rgba(15, 23, 42, 0.9),
+        0 0 24px rgba(15, 23, 42, 0.9);
+    }
+
     .reels {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
+      gap: 10px;
     }
+
     .reel {
-      background: #111;
-      border-radius: 12px;
-      border: 1px solid #333;
-      padding: 12px 8px;
-      min-width: 55px;
+      background: #0b1120;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+      height: 86px;
+      overflow: hidden;
+      position: relative;
+      box-shadow:
+        inset 0 0 12px rgba(15, 23, 42, 0.9),
+        0 6px 10px rgba(0, 0, 0, 0.7);
     }
-    .symbol {
+
+    .reel-strip {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .slot-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 86px;
+    }
+
+    .slot-emoji {
       font-size: 32px;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
-    .label {
+
+    .slot-label {
       font-size: 11px;
-      opacity: 0.8;
+      color: #cbd5f5;
+      opacity: 0.9;
+      white-space: nowrap;
     }
-    .result {
-      min-height: 40px;
-      margin-bottom: 15px;
-      font-size: 16px;
+
+    .reel.spinning {
+      filter: brightness(1.1);
+      box-shadow:
+        inset 0 0 16px rgba(55, 65, 81, 0.9),
+        0 0 26px rgba(59, 130, 246, 0.5);
     }
-    .result.win {
-      color: #4dff7b;
-      font-weight: 700;
+
+    /* Zone de message */
+
+    .info-panel {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
     }
-    .result.lose {
-      color: #ffb74d;
+
+    .status-line {
+      min-height: 20px;
     }
+
+    .status-line span {
+      font-weight: 600;
+    }
+
+    .status-wait {
+      color: #e5e7eb;
+    }
+
+    .status-win {
+      color: #4ade80;
+      text-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
+    }
+
+    .status-lose {
+      color: #f97316;
+    }
+
     .rules {
-      font-size: 12px;
-      opacity: 0.8;
-      line-height: 1.3;
+      font-size: 11px;
+      color: #9ca3af;
+      line-height: 1.35;
     }
-    .btn {
-      margin-top: 8px;
-      padding: 8px 16px;
+
+    /* Bouton de spin (pour toi, en debug) */
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .btn-spin {
+      padding: 6px 16px;
       border-radius: 999px;
       border: none;
-      cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
-      background: linear-gradient(90deg, #ff4ddb, #ff9a3c);
-      color: #000;
+      cursor: pointer;
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      color: #020617;
+      box-shadow:
+        0 0 10px rgba(34, 197, 94, 0.7),
+        0 3px 8px rgba(15, 23, 42, 0.8);
     }
-    .btn:active {
-      transform: scale(0.97);
+
+    .btn-spin:active {
+      transform: translateY(1px);
+      box-shadow:
+        0 0 5px rgba(34, 197, 94, 0.7),
+        0 1px 4px rgba(15, 23, 42, 0.9);
+    }
+
+    /* Tu peux cacher le bouton pour TikTok en mettant display:none ici */
+    /* .controls { display: none; } */
+
+    @media (max-width: 480px) {
+      .machine {
+        padding: 16px 14px 22px;
+      }
+
+      .machine-logo {
+        font-size: 20px;
+      }
+
+      .reel {
+        height: 78px;
+      }
+
+      .slot-cell {
+        height: 78px;
+      }
+
+      .slot-emoji {
+        font-size: 28px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="wrapper">
-    <div class="title">Machine à sous TikTok 🎰</div>
-    <div class="subtitle">Spéciale cadeaux – 4 symboles identiques = cadeau envoyé</div>
-    <div class="viewer">Viewer : <span id="viewerName">???</span></div>
-
-    <div class="slot-box">
-      <div class="reels" id="reels">
-        <!-- rempli par le script -->
+  <div class="scene">
+    <div class="machine">
+      <div class="machine-header">
+        <div class="machine-logo">3B BO BO BOOM</div>
+        <div class="machine-sub">Slot cadeaux TikTok • 4 symboles identiques = cadeau gagné</div>
+        <div class="viewer-tag">
+          Viewer : <span id="viewerName">???</span>
+        </div>
       </div>
 
-      <div id="result" class="result"></div>
+      <div class="window">
+        <div class="reels-frame">
+          <div class="reels" id="reels"></div>
+        </div>
+      </div>
 
-      <button class="btn" id="spinBtn">Relancer (pour tester)</button>
+      <div class="info-panel">
+        <div id="status" class="status-line status-wait">
+          En attente de spin…
+        </div>
+        <div class="rules">
+          Quand le viewer envoie un cadeau, la machine tourne.  
+          4 symboles identiques = tu dois lui envoyer ce cadeau sur TikTok.
+        </div>
+      </div>
 
-      <div class="rules">
-        4 symboles identiques = tu gagnes ce cadeau.<br />
-        Sinon, ça ne compte pas. Les cadeaux sont envoyés manuellement par le streamer.
+      <div class="controls">
+        <button class="btn-spin" id="btnSpin">Tester un spin</button>
       </div>
     </div>
   </div>
 
   <script>
-    // 🔹 Liste des cadeaux / symboles (tu pourras en ajouter)
-    const symbols = [
-      { id: "rose", emoji: "🌹", name: "Rose" },
-      { id: "donut", emoji: "🍩", name: "Donut" },
-      { id: "tiktok", emoji: "🎵", name: "Logo TikTok" },
-      { id: "lion", emoji: "🦁", name: "Léon Chaton" },
+    // --- Config symboles / cadeaux ---
+    const SYMBOLS = [
+      { id: "rose",   emoji: "🌹", name: "Rose" },
+      { id: "donut",  emoji: "🍩", name: "Donut" },
+      { id: "tiktok", emoji: "🎵", name: "TikTok" },
+      { id: "lion",   emoji: "🦁", name: "Léon Chaton" },
       { id: "galaxy", emoji: "🌌", name: "Galaxy" },
-      { id: "moto", emoji: "🏍️", name: "Moto Futuriste" }
+      { id: "moto",   emoji: "🏍️", name: "Moto" }
     ];
 
-    const reelsContainer = document.getElementById("reels");
-    const resultEl = document.getElementById("result");
-    const spinBtn = document.getElementById("spinBtn");
+    const REEL_COUNT = 4;
+    const SPIN_TIME = 1200;      // durée de base
+    const STEP_TIME = 90;        // temps entre changements pendant spin
 
-    // 🔹 Récup du pseudo depuis ?user= dans l’URL
+    const reelsContainer = document.getElementById("reels");
+    const statusEl = document.getElementById("status");
+    const btnSpin = document.getElementById("btnSpin");
+
     const params = new URLSearchParams(window.location.search);
-    const viewer = params.get("user") || params.get("username") || "Viewer";
+    const viewer =
+      params.get("user") ||
+      params.get("username") ||
+      "Viewer";
     document.getElementById("viewerName").textContent = viewer;
 
+    let spinning = false;
+
     function randomSymbol() {
-      return symbols[Math.floor(Math.random() * symbols.length)];
+      return SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
     }
 
-    function renderReels(picks) {
+    // Création des 4 rouleaux
+    function initMachine() {
       reelsContainer.innerHTML = "";
-      picks.forEach(sym => {
-        const div = document.createElement("div");
-        div.className = "reel";
-        div.innerHTML = `
-          <div class="symbol">${sym.emoji}</div>
-          <div class="label">${sym.name}</div>
+      for (let i = 0; i < REEL_COUNT; i++) {
+        const reel = document.createElement("div");
+        reel.className = "reel";
+
+        const strip = document.createElement("div");
+        strip.className = "reel-strip";
+
+        const cell = document.createElement("div");
+        cell.className = "slot-cell";
+        cell.innerHTML = `
+          <div class="slot-emoji">❔</div>
+          <div class="slot-label">En attente</div>
         `;
-        reelsContainer.appendChild(div);
-      });
-    }
 
-    function spin() {
-      const picks = [randomSymbol(), randomSymbol(), randomSymbol(), randomSymbol()];
-      renderReels(picks);
-
-      const allSame = picks.every(s => s.id === picks[0].id);
-
-      if (allSame) {
-        resultEl.className = "result win";
-        resultEl.textContent = `🎁 ${viewer}, 4x ${picks[0].name} alignés ! Le streamer te doit ce cadeau sur TikTok.`;
-      } else {
-        resultEl.className = "result lose";
-        resultEl.textContent = `Pas 4 symboles identiques… Il faut 4x le même cadeau pour gagner.`;
+        strip.appendChild(cell);
+        reel.appendChild(strip);
+        reelsContainer.appendChild(reel);
       }
     }
 
-    // Premier spin à l’ouverture (pour Ticfinity)
-    spin();
+    function setReelSymbol(index, symbol) {
+      const reel = reelsContainer.children[index];
+      const strip = reel.querySelector(".reel-strip");
 
-    // Bouton pour tester manuellement
-    spinBtn.addEventListener("click", spin);
+      strip.innerHTML = `
+        <div class="slot-cell">
+          <div class="slot-emoji">${symbol.emoji}</div>
+          <div class="slot-label">${symbol.name}</div>
+        </div>
+      `;
+    }
+
+    function spin() {
+      if (spinning) return;
+      spinning = true;
+
+      statusEl.className = "status-line status-wait";
+      statusEl.textContent = "La machine tourne…";
+
+      const finalSymbols = [];
+      const intervals = [];
+
+      // mettre tous les rouleaux en mode "spinning"
+      for (let i = 0; i < REEL_COUNT; i++) {
+        const reel = reelsContainer.children[i];
+        reel.classList.add("spinning");
+
+        // changement rapide des symboles pendant le spin
+        const interval = setInterval(() => {
+          const sym = randomSymbol();
+          setReelSymbol(i, sym);
+        }, STEP_TIME);
+
+        intervals.push(interval);
+      }
+
+      // arrêt progressif
+      for (let i = 0; i < REEL_COUNT; i++) {
+        const delay = SPIN_TIME + i * 220;
+        setTimeout(() => {
+          clearInterval(intervals[i]);
+          const sym = randomSymbol();
+          finalSymbols[i] = sym;
+          setReelSymbol(i, sym);
+          const reel = reelsContainer.children[i];
+          reel.classList.remove("spinning");
+
+          if (i === REEL_COUNT - 1) {
+            endSpin(finalSymbols);
+          }
+        }, delay);
+      }
+    }
+
+    function endSpin(finalSymbols) {
+      const allSame = finalSymbols.every(s => s.id === finalSymbols[0].id);
+
+      if (allSame) {
+        statusEl.className = "status-line status-win";
+        statusEl.textContent =
+          `🎁 ${viewer} a aligné 4x ${finalSymbols[0].name} ! ` +
+          `Tu lui dois ce cadeau sur TikTok.`;
+      } else {
+        statusEl.className = "status-line status-lose";
+        statusEl.textContent =
+          "Pas 4 symboles identiques… Il faudra un autre cadeau pour gagner.";
+      }
+
+      spinning = false;
+    }
+
+    // init + spin automatique au chargement
+    initMachine();
+    setTimeout(spin, 400); // petit délai pour l'effet
+
+    // bouton debug pour toi
+    btnSpin.addEventListener("click", spin);
+
+    // Si un jour tu veux déclencher depuis l'extérieur (overlay),
+    // tu pourras appeler window.triggerSlotSpin() depuis ton outil.
+    window.triggerSlotSpin = spin;
   </script>
 </body>
 </html>
