@@ -3,238 +3,696 @@
 <head>
   <meta charset="UTF-8" />
   <title>Machine à sous TikTok</title>
+
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { margin:0; padding:0; box-sizing:border-box; }
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: radial-gradient(circle at top, #1d3350 0, #050811 55%, #02030a 100%);
-      color: #fff;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      color:#fff;
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
     .machine-wrapper {
-      width: 90vw;
-      max-width: 1100px;
-      height: 90vh;
-      max-height: 650px;
-      border-radius: 40px;
-      padding: 20px 24px 28px;
-      background: linear-gradient(180deg, #2c0f33 0%, #120615 50%, #20183b 100%);
-      box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), 0 0 80px rgba(147, 51, 234, 0.6);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
+      width:90vw;
+      max-width:1100px;
+      height:90vh;
+      max-height:650px;
+      border-radius:40px;
+      padding:20px 24px 28px;
+      background:linear-gradient(180deg,#2c0f33 0%,#120615 50%,#20183b 100%);
+      box-shadow:0 0 40px rgba(0,0,0,0.8),0 0 80px rgba(147,51,234,0.6);
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow:hidden;
     }
 
     .machine-header {
-      text-align: center;
-      margin-bottom: 10px;
+      text-align:center;
+      margin-bottom:10px;
     }
 
     .machine-title {
-      font-size: 32px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      font-weight: 800;
-      color: #ffd54f;
-      text-shadow: 0 0 12px rgba(255, 215, 0, 0.9), 0 0 24px rgba(255, 64, 129, 0.7);
+      font-size:32px;
+      letter-spacing:3px;
+      text-transform:uppercase;
+      font-weight:800;
+      color:#ffd54f;
+      text-shadow:0 0 12px rgba(255,215,0,0.9),0 0 24px rgba(255,64,129,0.7);
     }
 
     .machine-subtitle {
-      margin-top: 4px;
-      font-size: 13px;
-      color: #e1e1ff;
-      opacity: 0.85;
+      margin-top:4px;
+      font-size:13px;
+      color:#e1e1ff;
+      opacity:0.85;
     }
 
     .top-status {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 10px 0 12px;
-      font-size: 13px;
-      color: #e5e5ff;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin:10px 0 12px;
+      font-size:13px;
+      color:#e5e5ff;
     }
 
     .player-info span {
-      font-weight: 600;
-      color: #ffeb3b;
+      font-weight:600;
+      color:#ffeb3b;
     }
 
     .spin-counter {
-      font-size: 12px;
-      color: #b0a5ff;
+      font-size:12px;
+      color:#b0a5ff;
     }
 
     .machine-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     }
 
     .reels-container {
-      flex: 1;
-      border-radius: 26px;
-      padding: 18px 14px;
-      background: radial-gradient(circle at top, #3147a0, #0b1023 55%, #040612 100%);
-      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
+      flex:1;
+      border-radius:26px;
+      padding:18px 14px;
+      background:radial-gradient(circle at top,#3147a0,#0b1023 55%,#040612 100%);
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
     }
 
     .reels-frame {
-      width: 100%;
-      max-width: 820px;
-      height: 100%;
-      max-height: 320px;
-      border-radius: 22px;
-      padding: 16px;
-      background: linear-gradient(180deg, #ff00b8, #ff9100);
-      box-shadow: 0 0 28px rgba(255, 64, 129, 0.65);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width:100%;
+      max-width:820px;
+      height:100%;
+      max-height:320px;
+      border-radius:22px;
+      padding:16px;
+      background:linear-gradient(180deg,#ff00b8,#ff9100);
+      box-shadow:0 0 28px rgba(255,64,129,0.65);
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
     .reels-inner {
-      flex: 1;
-      height: 100%;
-      background: radial-gradient(circle at top, #121b33, #050814 70%);
-      border-radius: 18px;
-      border: 4px solid rgba(255, 255, 255, 0.05);
-      display: flex;
-      justify-content: space-evenly;
-      align-items: center;
-      padding: 10px 14px;
-      gap: 10px;
+      flex:1;
+      height:100%;
+      background:radial-gradient(circle at top,#121b33,#050814 70%);
+      border-radius:18px;
+      border:4px solid rgba(255,255,255,0.05);
+      display:flex;
+      justify-content:space-evenly;
+      align-items:center;
+      padding:10px 14px;
+      gap:10px;
     }
 
     .reel {
-      flex: 1;
-      max-width: 150px;
-      height: 100%;
-      border-radius: 16px;
-      background: linear-gradient(180deg, #171f33, #050713);
-      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      position: relative;
+      flex:1;
+      max-width:150px;
+      height:100%;
+      border-radius:16px;
+      background:linear-gradient(180deg,#171f33,#050713);
+      box-shadow:inset 0 0 15px rgba(0,0,0,0.8);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      position:relative;
     }
 
     .reel img {
-      width: 80%;
-      max-height: 90%;
-      object-fit: contain;
-      filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.9));
-      transition: transform 0.08s linear;
+      width:80%;
+      max-height:90%;
+      object-fit:contain;
+      filter:drop-shadow(0 0 12px rgba(0,0,0,0.9));
+      transition:transform 0.08s linear;
     }
 
     .reel.spinning img {
-      animation: wiggle 0.1s linear infinite;
-      opacity: 0.9;
+      animation:wiggle 0.1s linear infinite;
+      opacity:0.9;
     }
 
     @keyframes wiggle {
-      0% { transform: translateY(-4px); }
-      50% { transform: translateY(4px); }
-      100% { transform: translateY(-4px); }
+      0%{transform:translateY(-4px);}
+      50%{transform:translateY(4px);}
+      100%{transform:translateY(-4px);}
     }
 
     .win-banner {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 6px 16px;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      pointer-events: none;
+      position:absolute;
+      top:10px;
+      left:50%;
+      transform:translateX(-50%);
+      padding:6px 16px;
+      border-radius:999px;
+      background:rgba(0,0,0,0.6);
+      border:1px solid rgba(255,255,255,0.2);
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      color:#fff;
+      display:none;
+      align-items:center;
+      gap:8px;
+      pointer-events:none;
     }
 
-    .win-banner span {
-      font-weight: 700;
-    }
-
-    .win-banner.big span { color: #ffeb3b; }
-    .win-banner.mega span { color: #00e5ff; }
-    .win-banner.giga span { color: #ff1744; }
+    .win-banner span { font-weight:700; }
+    .win-banner.big span  { color:#ffeb3b; }
+    .win-banner.mega span { color:#00e5ff; }
+    .win-banner.giga span { color:#ff1744; }
 
     .machine-footer {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      margin-top: 6px;
+      display:flex;
+      gap:14px;
+      align-items:center;
+      margin-top:6px;
     }
 
     .control-panel {
-      flex: 2;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 18px;
-      padding: 10px 14px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 12px;
-      align-items: center;
-      font-size: 13px;
+      flex:2;
+      background:rgba(0,0,0,0.4);
+      border-radius:18px;
+      padding:10px 14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 12px;
+      align-items:center;
+      font-size:13px;
     }
 
     .control-panel label {
-      font-size: 12px;
-      color: #ddd;
+      font-size:12px;
+      color:#ddd;
     }
 
     .control-panel input {
-      background: rgba(7, 10, 26, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
-      border-radius: 999px;
-      padding: 5px 10px;
-      font-size: 13px;
-      outline: none;
-      min-width: 110px;
+      background:rgba(7,10,26,0.9);
+      border:1px solid rgba(255,255,255,0.15);
+      color:#fff;
+      border-radius:999px;
+      padding:5px 10px;
+      font-size:13px;
+      outline:none;
+      min-width:110px;
     }
 
     .control-panel input:focus {
-      border-color: #ff80ff;
-      box-shadow: 0 0 0 1px rgba(255, 128, 255, 0.4);
+      border-color:#ff80ff;
+      box-shadow:0 0 0 1px rgba(255,128,255,0.4);
+    }
+
+    .helper-text {
+      font-size:11px;
+      color:#b9b9ff;
+      margin-top:4px;
     }
 
     .buttons-panel {
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
+      flex:1;
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
     }
 
     .btn {
-      border-radius: 999px;
-      border: none;
-      padding: 9px 18px;
-      font-size: 14px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      cursor
+      border-radius:999px;
+      border:none;
+      padding:9px 18px;
+      font-size:14px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      cursor:pointer;
+      transition:transform 0.08s ease, box-shadow 0.08s ease, opacity 0.08s ease;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+    }
+
+    .btn:disabled {
+      opacity:0.45;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+
+    .btn-primary {
+      background:radial-gradient(circle at top,#00e676,#00b0ff);
+      color:#011017;
+      box-shadow:0 0 14px rgba(0,230,118,0.6);
+    }
+
+    .btn-secondary {
+      background:radial-gradient(circle at top,#ffea00,#ff6f00);
+      color:#120300;
+      box-shadow:0 0 14px rgba(255,193,7,0.6);
+    }
+
+    .btn:hover:not(:disabled) {
+      transform:translateY(-2px);
+      box-shadow:0 0 18px rgba(255,255,255,0.35);
+    }
+
+    .btn:active:not(:disabled) {
+      transform:translateY(0px) scale(0.98);
+      box-shadow:0 0 8px rgba(255,255,255,0.2);
+    }
+
+    @media (max-width:900px){
+      .machine-wrapper { padding:16px; }
+      .machine-title { font-size:26px; }
+      .machine-footer {
+        flex-direction:column;
+        align-items:stretch;
+      }
+      .buttons-panel { justify-content:center; }
+    }
+
+    /* Effets plein écran */
+    .fx {
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:30;
+    }
+
+    .hidden { display:none; }
+
+    .fx-fireworks {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,0,0.5), transparent 60%),
+        radial-gradient(circle at 80% 40%, rgba(255,0,0,0.5), transparent 60%),
+        radial-gradient(circle at 40% 80%, rgba(0,200,255,0.5), transparent 60%),
+        rgba(0,0,0,0.7);
+      animation:fireworks 1.2s ease-out infinite;
+    }
+
+    @keyframes fireworks {
+      0%{opacity:0; transform:scale(1);}
+      30%{opacity:1; transform:scale(1.02);}
+      100%{opacity:0; transform:scale(1.05);}
+    }
+
+    .fx-confetti {
+      background-image:
+        repeating-linear-gradient(to bottom, rgba(255,0,0,0.5) 0 10px, transparent 10px 20px),
+        repeating-linear-gradient(to right, rgba(0,255,0,0.5) 0 10px, transparent 10px 20px);
+      animation:confetti 1.2s linear infinite;
+    }
+
+    @keyframes confetti {
+      0%{background-position:0 0,0 0; opacity:0;}
+      20%{opacity:1;}
+      100%{background-position:0 200px,200px 0; opacity:0;}
+    }
+  </style>
+</head>
+<body>
+  <div class="machine-wrapper">
+    <div class="machine-header">
+      <div class="machine-title">Slot 3B TikTok</div>
+      <div class="machine-subtitle">
+        4 mêmes cadeaux sur la ligne = gain • Loup = <strong>GIGA WIN</strong> • Moto = <strong>MEGA WIN</strong>
+      </div>
+    </div>
+
+    <div class="top-status">
+      <div class="player-info">
+        Joueur : <span id="playerNameDisplay">-</span> • Cadeau : <span id="giftCoinsDisplay">0</span> pièces • Tours restants : <span id="spinsLeftDisplay">0</span>
+      </div>
+      <div class="spin-counter">
+        Tours joués : <span id="totalSpinsDisplay">0</span> • Tours depuis gros gain : <span id="sinceBigDisplay">0</span>
+      </div>
+    </div>
+
+    <div class="machine-body">
+      <div class="reels-container">
+        <div id="winBanner" class="win-banner">
+          <span id="winTypeLabel"></span> — <span id="winSymbolLabel"></span>
+        </div>
+
+        <div class="reels-frame">
+          <div class="reels-inner">
+            <div class="reel" data-index="0"><img src="" alt="reel 1"></div>
+            <div class="reel" data-index="1"><img src="" alt="reel 2"></div>
+            <div class="reel" data-index="2"><img src="" alt="reel 3"></div>
+            <div class="reel" data-index="3"><img src="" alt="reel 4"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="machine-footer">
+        <div class="control-panel">
+          <div>
+            <label for="playerName">Pseudo TikTok :</label><br>
+            <input id="playerName" type="text" placeholder="Pseudo…" />
+          </div>
+          <div>
+            <label for="giftCoins">Valeur du cadeau (pièces) :</label><br>
+            <input id="giftCoins" type="number" min="1" placeholder="ex: 99" />
+          </div>
+          <div class="helper-text">
+            Minimum <strong>49 pièces</strong> pour jouer.<br>
+            49–98 → 1 tour • 99–298 → 3 tours • 299–2998 → 7 tours • 2999+ → 70 tours.<br>
+            Règles scriptées : petits lots, 70 tours, moto 200, gros cycle 260.
+          </div>
+        </div>
+
+        <div class="buttons-panel">
+          <button id="setGiftBtn" class="btn btn-secondary">Valider le cadeau</button>
+          <button id="spinBtn" class="btn btn-primary" disabled>SPIN</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Effets plein écran -->
+  <div id="fx-fireworks" class="fx fx-fireworks hidden"></div>
+  <div id="fx-confetti" class="fx fx-confetti hidden"></div>
+
+  <script>
+    /* CONFIG DES SYMBOLS */
+    const IMAGE_BASE_PATH = ""; // si tes images sont dans un dossier, mets "images/" etc.
+
+    const SYMBOLS = [
+      { id:"cygne",        file:"IMG-20251120-WA0017.jpg", label:"Cygne royal",        isBig:false },
+      { id:"loup",         file:"IMG-20251120-WA0018.jpg", label:"Loup",               isBig:true,  bigType:"giga" },
+      { id:"rosejamais",   file:"IMG-20251120-WA0019.jpg", label:"Rose à jamais",      isBig:false },
+      { id:"casquette",    file:"IMG-20251120-WA0020.jpg", label:"Casquette",          isBig:false },
+      { id:"manette",      file:"IMG-20251120-WA0021.jpg", label:"Manette de jeu",     isBig:false },
+      { id:"confetti",     file:"IMG-20251120-WA0022.jpg", label:"Confetti",           isBig:false },
+      { id:"amourlangage", file:"IMG-20251120-WA0023.jpg", label:"Amour en langage",   isBig:false },
+      { id:"donuts",       file:"IMG-20251120-WA0024.jpg", label:"Donut",              isBig:false },
+      { id:"glace",        file:"IMG-20251120-WA0025.jpg", label:"Cornet glacé",       isBig:false },
+      { id:"parfum",       file:"IMG-20251120-WA0026.jpg", label:"Parfum",             isBig:false },
+      { id:"corgi",        file:"IMG-20251120-WA0027.jpg", label:"Corgi",              isBig:false },
+      { id:"gants",        file:"IMG-20251120-WA0028.jpg", label:"Gants de boxe",      isBig:false },
+      { id:"rosa",         file:"IMG-20251120-WA0029.jpg", label:"Rosa",               isBig:false },
+      { id:"gg",           file:"IMG-20251120-WA0030.jpg", label:"GG",                 isBig:false },
+      { id:"positivite",   file:"IMG-20251120-WA0031.jpg", label:"De la positivité",   isBig:false },
+      { id:"tofu",         file:"IMG-20251120-WA0032.jpg", label:"Tofu",               isBig:false },
+      { id:"coeurdoigts",  file:"IMG-20251120-WA0033.jpg", label:"Cœur avec les doigts", isBig:false },
+      { id:"coeurnuage",   file:"IMG-20251120-WA0034.jpg", label:"Cœur nuage",         isBig:false },
+      { id:"moto",         file:"IMG-20251120-WA0035.jpg", label:"Moto",               isBig:true,  bigType:"mega" },
+      { id:"pistolet",     file:"IMG-20251120-WA0042.jpg", label:"Pistolet à argent",  isBig:false }
+    ];
+
+    const NON_BIG_SYMBOLS = SYMBOLS.filter(s => !s.isBig);
+
+    // Petits lots 15–20
+    const SMALL_REWARD_IDS = [
+      "donuts","rosa","manette","confetti",
+      "parfum","tofu","glace","casquette"
+    ];
+
+    // Lots 70 tours
+    const MEDIUM_REWARD_IDS = [
+      "rosejamais","pistolet","corgi","casquette",
+      "positivite","confetti","amourlangage","rosa","parfum"
+    ];
+
+    // Cycle complet 260+
+    const BIG_260_SEQUENCE = [
+      "cygne","pistolet","moto","loup",
+      "pistolet","cygne","moto","pistolet","loup",
+      "cygne","moto","cygne","pistolet","moto","loup"
+    ];
+    let big260Index = 0;
+
+    // État global
+    let currentPlayerName = "";
+    let currentGiftCoins  = 0;
+    let spinsLeft         = 0;
+    let isSpinning        = false;
+    let totalSpins        = 0;
+
+    let moto200Given      = false;          // moto obligatoire une seule fois
+    let nextSmallRewardAt = getRandomInt(15, 20);
+    let lastRewardSource  = null;           // "200" / "260" / "70" / "small" / null
+
+    // Sélecteurs
+    const reels            = Array.from(document.querySelectorAll(".reel"));
+    const winBanner        = document.getElementById("winBanner");
+    const winTypeLabel     = document.getElementById("winTypeLabel");
+    const winSymbolLabel   = document.getElementById("winSymbolLabel");
+    const playerNameDisplay = document.getElementById("playerNameDisplay");
+    const giftCoinsDisplay  = document.getElementById("giftCoinsDisplay");
+    const spinsLeftDisplay  = document.getElementById("spinsLeftDisplay");
+    const totalSpinsDisplay = document.getElementById("totalSpinsDisplay");
+    const sinceBigDisplay   = document.getElementById("sinceBigDisplay");
+    const setGiftBtn        = document.getElementById("setGiftBtn");
+    const spinBtn           = document.getElementById("spinBtn");
+    const fxFireworks       = document.getElementById("fx-fireworks");
+    const fxConfetti        = document.getElementById("fx-confetti");
+
+    function getSymbolById(id){
+      return SYMBOLS.find(s => s.id === id);
+    }
+    function randomSymbol(pool = SYMBOLS){
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+    function randomNonBigSymbol(){
+      return randomSymbol(NON_BIG_SYMBOLS);
+    }
+    function getRandomInt(min, max){
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    function calcSpinsFromCoins(coins){
+      if (coins >= 2999) return 70;
+      if (coins >= 299)  return 7;
+      if (coins >= 99)   return 3;
+      if (coins >= 49)   return 1;
+      return 0;
+    }
+
+    function updateStatusDisplays(){
+      playerNameDisplay.textContent = currentPlayerName || "-";
+      giftCoinsDisplay.textContent  = currentGiftCoins.toString();
+      spinsLeftDisplay.textContent  = spinsLeft.toString();
+      totalSpinsDisplay.textContent = totalSpins.toString();
+      sinceBigDisplay.textContent   = "0";
+    }
+
+    function showWinBanner(type, symbol){
+      let cls = "";
+      let label = "";
+      if (type === "giga") { cls="giga"; label="GIGA WIN"; }
+      else if (type === "mega") { cls="mega"; label="MEGA WIN"; }
+      else if (type === "big") { cls="big"; label="BIG WIN"; }
+      else {
+        winBanner.style.display = "none";
+        return;
+      }
+
+      winBanner.classList.remove("big","mega","giga");
+      winBanner.classList.add(cls);
+      winTypeLabel.textContent   = `${label} pour ${currentPlayerName || "-"}`;
+      winSymbolLabel.textContent = `4× ${symbol.label}`;
+      winBanner.style.display    = "flex";
+
+      // reset FX
+      fxFireworks.classList.add("hidden");
+      fxConfetti.classList.add("hidden");
+
+      // loup / moto gardent leur effet de base
+      if (type === "giga") {
+        fxFireworks.classList.remove("hidden");
+      } else if (type === "mega") {
+        fxConfetti.classList.remove("hidden");
+      }
+
+      setTimeout(() => { hideWinBanner(); }, 4000);
+    }
+
+    function hideWinBanner(){
+      winBanner.style.display = "none";
+      fxFireworks.classList.add("hidden");
+      fxConfetti.classList.add("hidden");
+    }
+
+    function initReels(){
+      reels.forEach(reel => {
+        const img = reel.querySelector("img");
+        const sym = randomSymbol();
+        img.src   = IMAGE_BASE_PATH + sym.file;
+        img.alt   = sym.label;
+        reel.dataset.symbolId = sym.id;
+      });
+    }
+
+    initReels();
+    updateStatusDisplays();
+
+    // LOGIQUE DES RÉSULTATS
+    function computeFinalSymbols(){
+      totalSpins++;
+      const spinIndex = totalSpins;
+
+      let forcedSymbolId = null;
+      lastRewardSource = null;
+
+      // 1) première fois 200 → moto
+      if (!moto200Given && spinIndex === 200) {
+        forcedSymbolId   = "moto";
+        moto200Given     = true;
+        lastRewardSource = "200";
+      }
+      // 2) >200 et multiple de 260 → cycle spécial
+      else if (spinIndex > 200 && spinIndex % 260 === 0) {
+        forcedSymbolId   = BIG_260_SEQUENCE[big260Index];
+        big260Index      = (big260Index + 1) % BIG_260_SEQUENCE.length;
+        lastRewardSource = "260";
+      }
+      // 3) multiple de 70
+      else if (spinIndex % 70 === 0) {
+        forcedSymbolId   = MEDIUM_REWARD_IDS[Math.floor(Math.random() * MEDIUM_REWARD_IDS.length)];
+        lastRewardSource = "70";
+      }
+      // 4) petit lot 15–20
+      else if (spinIndex === nextSmallRewardAt) {
+        forcedSymbolId   = SMALL_REWARD_IDS[Math.floor(Math.random() * SMALL_REWARD_IDS.length)];
+        nextSmallRewardAt = spinIndex + getRandomInt(15, 20);
+        lastRewardSource = "small";
+      }
+
+      const finalSymbols = [];
+
+      if (forcedSymbolId) {
+        const sym = getSymbolById(forcedSymbolId);
+        for (let i = 0; i < 4; i++) finalSymbols.push(sym);
+      } else {
+        for (let i = 0; i < 4; i++) finalSymbols.push(randomNonBigSymbol());
+      }
+
+      return finalSymbols;
+    }
+
+    // Cadeau / validation
+    setGiftBtn.addEventListener("click", () => {
+      const name  = document.getElementById("playerName").value.trim();
+      const coins = parseInt(document.getElementById("giftCoins").value, 10);
+
+      if (!name) {
+        alert("Merci d'entrer le pseudo TikTok du joueur.");
+        return;
+      }
+      if (isNaN(coins) || coins <= 0) {
+        alert("Merci d'entrer le nombre de pièces du cadeau.");
+        return;
+      }
+
+      const spins = calcSpinsFromCoins(coins);
+      if (spins === 0) {
+        alert("Minimum 49 pièces pour jouer.");
+        return;
+      }
+
+      currentPlayerName = name;
+      currentGiftCoins  = coins;
+      spinsLeft        += spins;
+      updateStatusDisplays();
+      spinBtn.disabled  = false;
+    });
+
+    // SPIN
+    spinBtn.addEventListener("click", () => {
+      if (isSpinning) return;
+      if (spinsLeft <= 0) {
+        alert("Plus de tours pour ce joueur. Nouveau cadeau nécessaire.");
+        spinBtn.disabled = true;
+        return;
+      }
+
+      spinsLeft--;
+      const finalSymbols = computeFinalSymbols();
+      updateStatusDisplays();
+      startSpin(finalSymbols);
+    });
+
+    function startSpin(finalSymbols){
+      isSpinning = true;
+      hideWinBanner();
+
+      const reelDurations = [1600, 2000, 2400, 2800];
+      let reelsStopped = 0;
+      const finalIds = new Array(4);
+
+      reels.forEach((reel, index) => {
+        reel.classList.add("spinning");
+        const img = reel.querySelector("img");
+
+        const shuffleInterval = setInterval(() => {
+          const sym = randomSymbol();
+          img.src = IMAGE_BASE_PATH + sym.file;
+          img.alt = sym.label;
+        }, 80);
+
+        setTimeout(() => {
+          clearInterval(shuffleInterval);
+
+          const finalSym = finalSymbols[index];
+          finalIds[index] = finalSym.id;
+
+          img.src = IMAGE_BASE_PATH + finalSym.file;
+          img.alt = finalSym.label;
+          reel.dataset.symbolId = finalSym.id;
+          reel.classList.remove("spinning");
+
+          reelsStopped++;
+          if (reelsStopped === reels.length) {
+            applyPrizeRules(finalSymbols, finalIds);
+            isSpinning = false;
+            updateStatusDisplays();
+            if (spinsLeft <= 0) spinBtn.disabled = true;
+          }
+        }, reelDurations[index]);
+      });
+    }
+
+    function applyPrizeRules(finalSymbols, finalIds){
+      const allSame = finalIds.every(id => id === finalIds[0]);
+      if (!allSame) {
+        hideWinBanner();
+        return;
+      }
+
+      const winningSymbol = finalSymbols[0];
+
+      if (winningSymbol.isBig) {
+        if (winningSymbol.id === "loup") {
+          showWinBanner("giga", winningSymbol);
+        } else if (winningSymbol.id === "moto") {
+          showWinBanner("mega", winningSymbol);
+        } else {
+          showWinBanner("big", winningSymbol);
+        }
+      } else {
+        showWinBanner("big", winningSymbol);
+      }
+
+      // Effet spécial pour les tours 260
+      if (lastRewardSource === "260") {
+        fxFireworks.classList.remove("hidden");
+        fxConfetti.classList.remove("hidden");
+      }
+    }
+  </script>
+</body>
+</html>
