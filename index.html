@@ -1,179 +1,374 @@
 <script>
-  // -----------------------------
-  // VARIABLES GLOBALES
-  // -----------------------------
-  let isSpinning = false;
-  let spinCount = 0;
+  /*────────────────────────────────────────
+    CONFIG DES SYMBOLS
+  ────────────────────────────────────────*/
+  const IMAGE_BASE_PATH = "";
 
-  // alternances
-  let toggle70 = true;   // pistolet / cygne
-  let toggle260 = true;  // moto / loup
-
-  // prochain petit lot entre 15 et 20 tours
-  let nextSmallRewardAt = getRandomInt(15, 20);
-
-  // Exemple de symboles sur tes rouleaux (adapte si besoin)
-  const symbols = [
-    "donut",
-    "confetti",
-    "toffu",
-    "pistolet",
-    "cygne",
-    "moto",
-    "loup"
+  const SYMBOLS = [
+    { id:"cygne",        file:"IMG-20251120-WA0017.jpg", label:"Cygne royal",        isBig:false },
+    { id:"loup",         file:"IMG-20251120-WA0018.jpg", label:"Loup",               isBig:true,  bigType:"giga" },
+    { id:"rosejamais",   file:"IMG-20251120-WA0019.jpg", label:"Rose à jamais",      isBig:false },
+    { id:"casquette",    file:"IMG-20251120-WA0020.jpg", label:"Casquette",          isBig:false },
+    { id:"manette",      file:"IMG-20251120-WA0021.jpg", label:"Manette",            isBig:false },
+    { id:"confetti",     file:"IMG-20251120-WA0022.jpg", label:"Confetti",           isBig:false },
+    { id:"amourlangage", file:"IMG-20251120-WA0023.jpg", label:"Amour en langage",   isBig:false },
+    { id:"donuts",       file:"IMG-20251120-WA0024.jpg", label:"Donut",              isBig:false },
+    { id:"glace",        file:"IMG-20251120-WA0025.jpg", label:"Cornet glacé",       isBig:false },
+    { id:"parfum",       file:"IMG-20251120-WA0026.jpg", label:"Parfum",             isBig:false },
+    { id:"corgi",        file:"IMG-20251120-WA0027.jpg", label:"Corgi",              isBig:false },
+    { id:"gants",        file:"IMG-20251120-WA0028.jpg", label:"Gants de boxe",      isBig:false },
+    { id:"rosa",         file:"IMG-20251120-WA0029.jpg", label:"Rosa",               isBig:false },
+    { id:"gg",           file:"IMG-20251120-WA0030.jpg", label:"GG",                 isBig:false },
+    { id:"positivite",   file:"IMG-20251120-WA0031.jpg", label:"De la positivité",   isBig:false },
+    { id:"tofu",         file:"IMG-20251120-WA0032.jpg", label:"Tofu",               isBig:false },
+    { id:"coeurdoigts",  file:"IMG-20251120-WA0033.jpg", label:"Cœur avec les doigts", isBig:false },
+    { id:"coeurnuage",   file:"IMG-20251120-WA0034.jpg", label:"Cœur nuage",         isBig:false },
+    { id:"moto",         file:"IMG-20251120-WA0035.jpg", label:"Moto",               isBig:true,  bigType:"mega" },
+    { id:"pistolet",     file:"IMG-20251120-WA0042.jpg", label:"Pistolet à argent",  isBig:false }
   ];
 
-  // -----------------------------
-  // LANCEMENT DU SPIN
-  // -----------------------------
-  function startSpin() {
-    if (isSpinning) return;
-    isSpinning = true;
+  const NON_BIG_SYMBOLS = SYMBOLS.filter(s => !s.isBig);
 
-    // 🔁 ici tu mets ton code d’animation des rouleaux
-    // par exemple : randomiser les symboles, lancer les transitions, etc.
+  /*────────────────────────────────────────
+    LISTES DES RÈGLES
+  ────────────────────────────────────────*/
 
-    // Exemple simple (à adapter à ton code existant) :
-    spinReels();
+  // Petits lots 15–20 tours
+  const SMALL_REWARD_IDS = [
+    "donuts","rosa","manette","confetti",
+    "parfum","tofu","glace","casquette"
+  ];
 
-    // ⏱ quand l’animation est finie, on appelle endSpin()
-    // adapte le timeout à la durée réelle de ton spin
-    setTimeout(() => {
-      endSpin();
-    }, 2000);
+  // Lots tous les 70 tours
+  const MEDIUM_REWARD_IDS = [
+    "rosejamais","pistolet","corgi","casquette",
+    "positivite","confetti","amourlangage","rosa","parfum"
+  ];
+
+  // Cycle spécial des tours 260+ (après 200)
+  const BIG_260_SEQUENCE = [
+    "cygne","pistolet","moto","loup",
+    "pistolet","cygne","moto","pistolet","loup",
+    "cygne","moto","cygne","pistolet","moto","loup"
+  ];
+  let big260Index = 0;
+
+  /*────────────────────────────────────────
+    ÉTAT GLOBAL
+  ────────────────────────────────────────*/
+  let currentPlayerName = "";
+  let currentGiftCoins  = 0;
+  let spinsLeft         = 0;
+
+  let isSpinning        = false;
+  let totalSpins        = 0;
+
+  // Moto obligatoire une seule fois au 1er tour 200
+  let moto200Given      = false;
+
+  // Prochain petit lot (entre 15 et 20)
+  let nextSmallRewardAt = getRandomInt(15, 20);
+
+  // Pour savoir d’où vient le lot (200, 260, 70, small, normal)
+  let lastRewardSource  = null;
+
+  /*────────────────────────────────────────
+    SELECTEURS DOM
+  ────────────────────────────────────────*/
+  const reels            = Array.from(document.querySelectorAll(".reel"));
+  const winBanner        = document.getElementById("winBanner");
+  const winTypeLabel     = document.getElementById("winTypeLabel");
+  const winSymbolLabel   = document.getElementById("winSymbolLabel");
+
+  const playerNameDisplay = document.getElementById("playerNameDisplay");
+  const giftCoinsDisplay  = document.getElementById("giftCoinsDisplay");
+  const spinsLeftDisplay  = document.getElementById("spinsLeftDisplay");
+  const totalSpinsDisplay = document.getElementById("totalSpinsDisplay");
+  const sinceBigDisplay   = document.getElementById("sinceBigDisplay");
+
+  const setGiftBtn       = document.getElementById("setGiftBtn");
+  const spinBtn          = document.getElementById("spinBtn");
+
+  const fxFireworks      = document.getElementById("fx-fireworks");
+  const fxConfetti       = document.getElementById("fx-confetti");
+
+  /*────────────────────────────────────────
+    UTILS
+  ────────────────────────────────────────*/
+  function getSymbolById(id){
+    return SYMBOLS.find(s => s.id === id);
   }
 
-  // -----------------------------
-  // ANIMATION DES ROULEAUX (exemple)
-  // -----------------------------
-  function spinReels() {
-    // Ici tu peux garder TON code pour gérer les 3 colonnes
-    // Je mets juste un exemple générique :
+  function randomSymbol(pool = SYMBOLS){
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
 
-    const reels = document.querySelectorAll(".reel");
-    reels.forEach((reel) => {
-      const randomSymbol =
-        symbols[Math.floor(Math.random() * symbols.length)];
-      reel.setAttribute("data-symbol", randomSymbol);
-      reel.textContent = randomSymbol; // à remplacer par tes emojis/images
+  function randomNonBigSymbol(){
+    return randomSymbol(NON_BIG_SYMBOLS);
+  }
+
+  function getRandomInt(min, max){
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function calcSpinsFromCoins(coins){
+    if (coins >= 2999) return 70;
+    if (coins >= 299)  return 7;
+    if (coins >= 99)   return 3;
+    if (coins >= 49)   return 1;
+    return 0;
+  }
+
+  function updateStatusDisplays(){
+    playerNameDisplay.textContent = currentPlayerName || "-";
+    giftCoinsDisplay.textContent  = currentGiftCoins.toString();
+    spinsLeftDisplay.textContent  = spinsLeft.toString();
+    totalSpinsDisplay.textContent = totalSpins.toString();
+    sinceBigDisplay.textContent   = "0"; // pas utilisé, on le laisse à 0
+  }
+
+  /*────────────────────────────────────────
+    BANDEAU + FX
+  ────────────────────────────────────────*/
+  function showWinBanner(type, symbol){
+    let cls   = "";
+    let label = "";
+
+    if (type === "giga") {
+      cls = "giga";
+      label = "GIGA WIN";
+    } else if (type === "mega") {
+      cls = "mega";
+      label = "MEGA WIN";
+    } else if (type === "big") {
+      cls = "big";
+      label = "BIG WIN";
+    } else {
+      winBanner.style.display = "none";
+      return;
+    }
+
+    winBanner.classList.remove("big","mega","giga");
+    winBanner.classList.add(cls);
+    winTypeLabel.textContent   = `${label} pour ${currentPlayerName || "-"}`;
+    winSymbolLabel.textContent = `4× ${symbol.label}`;
+    winBanner.style.display    = "flex";
+
+    // Reset FX
+    fxFireworks.classList.add("hidden");
+    fxConfetti.classList.add("hidden");
+
+    // Par défaut : loup -> feu d'artifice, moto -> confettis
+    if (type === "giga") {
+      fxFireworks.classList.remove("hidden");
+    } else if (type === "mega") {
+      fxConfetti.classList.remove("hidden");
+    }
+
+    // Masque après 4 secondes
+    setTimeout(() => {
+      hideWinBanner();
+    }, 4000);
+  }
+
+  function hideWinBanner(){
+    winBanner.style.display = "none";
+    fxFireworks.classList.add("hidden");
+    fxConfetti.classList.add("hidden");
+  }
+
+  /*────────────────────────────────────────
+    INIT DES REELS
+  ────────────────────────────────────────*/
+  function initReels(){
+    reels.forEach(reel => {
+      const img = reel.querySelector("img");
+      const sym = randomSymbol();
+      img.src   = IMAGE_BASE_PATH + sym.file;
+      img.alt   = sym.label;
+      reel.dataset.symbolId = sym.id;
     });
   }
 
-  // -----------------------------
-  // FIN DU SPIN
-  // -----------------------------
-  function endSpin() {
-    // Ici, si tu as une logique de gains normale
-    // basée sur l’alignement des symboles, tu la gardes.
+  initReels();
+  updateStatusDisplays();
 
-    // Ensuite on gère tes tours "scriptés"
-    handleRewardsLogic();
+  /*────────────────────────────────────────
+    LOGIQUE PRINCIPALE DES RÉCOMPENSES
+  ────────────────────────────────────────*/
+  function computeFinalSymbols(){
+    totalSpins++;
+    const spinIndex = totalSpins;
 
-    isSpinning = false;
+    let forcedSymbolId = null;
+    lastRewardSource   = null; // reset
+
+    // 1️⃣ Première fois qu’on atteint 200 tours → moto garantie
+    if (!moto200Given && spinIndex === 200) {
+      forcedSymbolId = "moto";
+      moto200Given   = true;
+      lastRewardSource = "200";
+    }
+
+    // 2️⃣ Après 200, tous les 260 tours → gros cycle spécial
+    else if (spinIndex > 200 && spinIndex % 260 === 0) {
+      forcedSymbolId   = BIG_260_SEQUENCE[big260Index];
+      big260Index      = (big260Index + 1) % BIG_260_SEQUENCE.length;
+      lastRewardSource = "260";
+    }
+
+    // 3️⃣ Tous les 70 tours → lot moyen
+    else if (spinIndex % 70 === 0) {
+      forcedSymbolId   = MEDIUM_REWARD_IDS[Math.floor(Math.random() * MEDIUM_REWARD_IDS.length)];
+      lastRewardSource = "70";
+    }
+
+    // 4️⃣ Tous les 15–20 tours → petit lot
+    else if (spinIndex === nextSmallRewardAt) {
+      forcedSymbolId   = SMALL_REWARD_IDS[Math.floor(Math.random() * SMALL_REWARD_IDS.length)];
+      nextSmallRewardAt = spinIndex + getRandomInt(15, 20);
+      lastRewardSource = "small";
+    }
+
+    const finalSymbols = [];
+
+    if (forcedSymbolId) {
+      const sym = getSymbolById(forcedSymbolId);
+      for (let i = 0; i < 4; i++) finalSymbols.push(sym);
+    } else {
+      for (let i = 0; i < 4; i++) finalSymbols.push(randomNonBigSymbol());
+    }
+
+    return finalSymbols;
   }
 
-  // -----------------------------
-  // LOGIQUE DES RÉCOMPENSES
-  // -----------------------------
-  function handleRewardsLogic() {
-    spinCount++;
+  /*────────────────────────────────────────
+    VALIDATION DU CADEAU
+  ────────────────────────────────────────*/
+  setGiftBtn.addEventListener("click", () => {
+    const nameInput  = document.getElementById("playerName");
+    const coinsInput = document.getElementById("giftCoins");
 
-    console.log("Tour n°", spinCount);
+    const name  = nameInput.value.trim();
+    const coins = parseInt(coinsInput.value, 10);
 
-    // 1️⃣ 200e tour : MOTO OBLIGATOIRE
-    if (spinCount === 200) {
-      giveReward("moto");
+    if (!name) {
+      alert("Merci d'entrer le pseudo TikTok du joueur.");
       return;
     }
 
-    // 2️⃣ Après 200, tous les 260 tours : MOTO / LOUP en alternance
-    // (260, 520, 780, etc.)
-    if (spinCount > 200 && spinCount % 260 === 0) {
-      if (toggle260) {
-        giveReward("moto");
-      } else {
-        giveReward("loup");
-      }
-      toggle260 = !toggle260;
+    if (isNaN(coins) || coins <= 0) {
+      alert("Merci d'entrer le nombre de pièces du cadeau.");
       return;
     }
 
-    // 3️⃣ Tous les 70 tours : PISTOLET / CYGNE en alternance
-    if (spinCount % 70 === 0) {
-      if (toggle70) {
-        giveReward("pistolet");
-      } else {
-        giveReward("cygne");
-      }
-      toggle70 = !toggle70;
+    const spins = calcSpinsFromCoins(coins);
+    if (spins === 0) {
+      alert("Minimum 49 pièces pour jouer.");
       return;
     }
 
-    // 4️⃣ Tous les 15–20 tours : PETIT LOT
-    if (spinCount === nextSmallRewardAt) {
-      giveSmallReward();
-      // On redéfinit le prochain petit lot
-      nextSmallRewardAt = spinCount + getRandomInt(15, 20);
+    currentPlayerName = name;
+    currentGiftCoins  = coins;
+    spinsLeft        += spins;
+
+    updateStatusDisplays();
+    spinBtn.disabled = false;
+  });
+
+  /*────────────────────────────────────────
+    LANCEMENT DU SPIN
+  ────────────────────────────────────────*/
+  spinBtn.addEventListener("click", () => {
+    if (isSpinning) return;
+    if (spinsLeft <= 0) {
+      alert("Plus de tours pour ce joueur. Nouveau cadeau (min 49 pièces) nécessaire.");
+      spinBtn.disabled = true;
       return;
     }
 
-    // Sinon, rien de "scripté" sur ce tour
-    console.log("Pas de lot programmé sur ce tour.");
-  }
+    spinsLeft--;
+    const finalSymbols = computeFinalSymbols();
+    updateStatusDisplays();
+    startSpin(finalSymbols);
+  });
 
-  // -----------------------------
-  // PETITS LOTS (donuts / confettis / toffu)
-  // -----------------------------
-  function giveSmallReward() {
-    const smallRewards = ["donut", "confetti", "toffu"];
-    const reward =
-      smallRewards[Math.floor(Math.random() * smallRewards.length)];
-    giveReward(reward);
-  }
+  function startSpin(finalSymbols){
+    isSpinning = true;
+    hideWinBanner();
 
-  // -----------------------------
-  // FONCTION GÉNÉRIQUE D’AFFICHAGE DE LOT
-  // -----------------------------
-  function giveReward(name) {
-    console.log("🎉 LOT GAGNÉ :", name);
+    const reelDurations = [1600, 2000, 2400, 2800];
+    let reelsStopped    = 0;
+    const finalIds      = new Array(4);
 
-    // Ici tu mets :
-    // - ton popup
-    // - ton overlay TikTok
-    // - tes animations
-    // - l’ajout de coins, etc.
+    reels.forEach((reel, index) => {
+      reel.classList.add("spinning");
+      const img = reel.querySelector("img");
 
-    const popup = document.querySelector(".reward-popup");
-    const rewardNameEl = document.querySelector(".reward-name");
-
-    if (popup && rewardNameEl) {
-      rewardNameEl.textContent = name;
-      popup.classList.add("visible");
+      const shuffleInterval = setInterval(() => {
+        const sym = randomSymbol();
+        img.src = IMAGE_BASE_PATH + sym.file;
+        img.alt = sym.label;
+      }, 80);
 
       setTimeout(() => {
-        popup.classList.remove("visible");
-      }, 2000);
-    }
+        clearInterval(shuffleInterval);
+
+        const finalSym = finalSymbols[index];
+        finalIds[index] = finalSym.id;
+
+        img.src = IMAGE_BASE_PATH + finalSym.file;
+        img.alt = finalSym.label;
+        reel.dataset.symbolId = finalSym.id;
+        reel.classList.remove("spinning");
+
+        reelsStopped++;
+
+        if (reelsStopped === reels.length) {
+          applyPrizeRules(finalSymbols, finalIds);
+          isSpinning = false;
+          updateStatusDisplays();
+
+          if (spinsLeft <= 0) {
+            spinBtn.disabled = true;
+          }
+        }
+      }, reelDurations[index]);
+    });
   }
 
-  // -----------------------------
-  // RANDOM INT INCLUSIF
-  // -----------------------------
-  function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return (
-      Math.floor(Math.random() * (max - min + 1)) + min
-    );
-  }
-
-  // -----------------------------
-  // BOUTON SPIN (exemple)
-  // -----------------------------
-  document.addEventListener("DOMContentLoaded", () => {
-    const spinBtn = document.querySelector(".spin-button");
-    if (spinBtn) {
-      spinBtn.addEventListener("click", startSpin);
+  /*────────────────────────────────────────
+    APPLICATION DES GAINS
+  ────────────────────────────────────────*/
+  function applyPrizeRules(finalSymbols, finalIds){
+    const allSame = finalIds.every(id => id === finalIds[0]);
+    if (!allSame) {
+      hideWinBanner();
+      return;
     }
-  });
+
+    const winningSymbol = finalSymbols[0];
+
+    // Type du gain pour le bandeau
+    if (winningSymbol.isBig) {
+      if (winningSymbol.id === "loup") {
+        showWinBanner("giga", winningSymbol);
+      } else if (winningSymbol.id === "moto") {
+        showWinBanner("mega", winningSymbol);
+      } else {
+        showWinBanner("big", winningSymbol);
+      }
+    } else {
+      showWinBanner("big", winningSymbol);
+    }
+
+    // 💥 EFFET SPÉCIAL POUR LES LOTS DES TOURS 260
+    if (lastRewardSource === "260") {
+      // On force feu d'artifice + confettis en même temps
+      fxFireworks.classList.remove("hidden");
+      fxConfetti.classList.remove("hidden");
+    }
+  }
 </script>
